@@ -7,8 +7,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const verify = require('./verifyToken')
 
-
-router.get('/reports', async (req, res, next)=>{
+router.get('/allreports', async (req, res, next)=>{
     try{
         let results = await db.reports();
         res.json(results)
@@ -19,8 +18,21 @@ router.get('/reports', async (req, res, next)=>{
         res.sendStatus(500);
     }
 });
+
+router.get('/reports', verify, async (req, res, next)=>{
+    try{
+        let results = await db.reports();
+        let filtered = results.filter(report=> report.UserId===req.user.id)
+        res.json(filtered)
+
+    }
+    catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
  
-router.get('/projects', verify, async (req, res, next)=>{
+router.get('/projects', async (req, res, next)=>{
     try{
         let results = await db.projects();
         res.json(results)
@@ -43,23 +55,34 @@ router.get('/users', async (req, res, next)=>{
     }
 });
 
-const SECRET = "youkey.babe.kissme"
+
+
+router.get('/getIndex',verify, (req, res, next)=>{
+    try{
+        res.json(req.user.id)
+
+    }
+    catch(e){
+        console.log(e);
+        res.sendStatus(500);
+    }
+});
+
 
 router.post('/usershash', async (req, res)=> {
     try{
-        let sql = `SELECT password FROM users WHERE email="${req.body.emailBody}"`    
+        let sql = `SELECT password FROM users WHERE email="${req.body.emailBody}"`  
         let hashed =  await db.getHashedPassword(sql, req);
         let hashStr = hashed[0].password;
-            bcrypt.compare(req.body.passwordBody,hashStr, function(err,result){        
-                if(err){
-                    throw (err)
-                }
-                if(result){
-                    const accsessToken = jwt.sign({mail: req.body.emailBody}, "" + process.env.JWT_KEY)
-                    res.header('auth-token', accsessToken).send({accsessToken});                                
-                } 
-                   // res.cookie('accsessToken', accsessToken, { httpOnly: true });
-            })    
+        bcrypt.compare(req.body.passwordBody,hashStr, function(err,result){   
+            if(err){
+                throw (err)
+            }
+            if(result){   
+                const accsessToken = jwt.sign({id: req.body.id}, "" + process.env.JWT_KEY)   
+                res.header('auth-token', accsessToken).send({accsessToken:accsessToken})
+            } 
+        })
     }
     catch(e){
         console.log(e);
@@ -70,7 +93,6 @@ router.post('/usershash', async (req, res)=> {
 router.get('/getToken', verify, (req, res)=> {
     try{
         let userMail = req.user.mail
-        console.log(userMail);
         res.send({userMail})  
     }
     catch(e){
