@@ -1,7 +1,4 @@
 import React,{useState, useEffect} from 'react'
-import { useDispatch} from 'react-redux'
-import {isLogged, addNewUser} from '../Actions'
-import {useHistory} from 'react-router-dom'
 
 export default function Login(){
     const [name, setName] = useState()
@@ -10,8 +7,6 @@ export default function Login(){
     const [password, setPassword] = useState()
     const [tempPassword, setTempPassword] =useState()
     const [users, setUsers] =useState([]);
-    const dispatch = useDispatch();
-
 
     useEffect(()=>{
         fetch('http://localhost:9000/users')
@@ -33,7 +28,7 @@ export default function Login(){
     }
 
     const handleEmail=(e)=>{
-        if(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(e.target.value)){
+        if(/[a-zA-Z0-9._!@#$%^&*()-+]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(e.target.value)){
             setEmail(e.target.value)
             document.getElementById("errorEmail").innerHTML=" ";
         }
@@ -43,7 +38,7 @@ export default function Login(){
     }
 
     const handlePhone=(e)=>{
-        if((/^\d{7,}$/).test(e.target.value.replace(/[\s()+\-\.]|ext/gi, ''))){
+        if((/^\d{7,}$/).test(e.target.value.replace(/[\s()+.-]|ext/gi, ''))){
             //strips all valid special characters which an international phone number can contain
             // (spaces, parens, +, -, ., ext) and then counts if there are at least 7 digits
             setPhone(e.target.value)
@@ -86,7 +81,6 @@ export default function Login(){
                    
                 let singleUser = {name:name, password:password, email:email, phone:phone}
                 const url = 'http://localhost:9000/users';
-                // console.log(singleReport);
                 const options = {
                     method: 'POST',
                     body: JSON.stringify(singleUser),
@@ -96,11 +90,6 @@ export default function Login(){
                 }
                 fetch(url, options)
                 .then(res => res.json())
-                
-                // history.push(`/timetracker/user=${UsersInfo[UserIndex].id}`)
-
-                // dispatch(addNewUser(name,password,email,phone))
-                // dispatch(isLogged(0))
             }
             else{
                 document.getElementById("errorEmail").innerHTML="Email already exists"; 

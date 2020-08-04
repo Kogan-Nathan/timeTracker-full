@@ -458,6 +458,8 @@ th{
   text-decoration: none;
   color: #5C5C5C;
   padding: 20px 80px;
+  background-color: transparent;
+  border: none;
 }
 
 .nav-links:hover{
@@ -473,6 +475,7 @@ th{
 .nav-itam :focus{
   background-color: #333333;
   color: #fff;
+  outline: none;
 }
 
 .lable{

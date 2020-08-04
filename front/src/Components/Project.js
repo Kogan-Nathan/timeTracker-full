@@ -14,7 +14,7 @@ export default function Project() {
         .then(data=> setProjectData(data))
         .catch(error=> console.error('Error: ', error)
         )
-    },[]);
+    },[token]);
     
     return (
         <div>

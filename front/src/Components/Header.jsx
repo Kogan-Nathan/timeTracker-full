@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { isLoggedOut } from '../Actions';
 
 
-export default function Header() {
+export default function Header(props) {
     const IsLoggedInfo = useSelector(state=>state.isLogged)
     const users = useSelector(state=>state.Users)
     const admin = useSelector(state=>state.Admin)
@@ -16,13 +16,11 @@ export default function Header() {
     }
     //----------------------------------------------------------
     const getName=()=>{
-        if(IsLoggedInfo.user==="admin"){
-            let name = admin.name
-            return name
+        if (props.userName){
+            return props.userName
         }
         else{
-            let name = users[IsLoggedInfo.userIndex].name
-            return name
+            return "admin"
         }
     }
     //----------------------------------------------------------
@@ -31,7 +29,7 @@ export default function Header() {
             <div className="header">
                 <Link to="/" className="logo"> TimeTracker </Link>
                 <div className="buttons-area"> 
-                {IsLoggedInfo.isLogged? <div>
+                {IsLoggedInfo? <div>
                 <span className="welcome">Welcome, {getName()}</span>
                         <button className="logout-butt" onClick={logout}>Log out</button> 
                     </div> : 

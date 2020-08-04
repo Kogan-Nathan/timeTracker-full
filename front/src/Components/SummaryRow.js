@@ -10,8 +10,8 @@ export default function SummaryRow(props) {
         fetch('http://localhost:9000/projects')
         .then(response=> response.json())
         .then(data=> setProjectData(data))
-        .catch(error=> console.error('Error: ', error)
-        )
+        .catch(error=> console.error('Error: ', error))
+        
     },[]);
 
     const totaltimeCalc=()=>{

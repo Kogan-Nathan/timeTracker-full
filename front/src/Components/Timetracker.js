@@ -1,22 +1,15 @@
 import React, {useState, useEffect} from 'react'
+import  { useSelector } from 'react-redux'
 import Table from 'react-bootstrap/Table'
 import ReportRaw from './ReportRaw'
-import { useSelector,useDispatch} from 'react-redux';
-import {addWorkHours, updateUserStatus, updateStatus} from '../Actions'
 import moment from 'moment' 
 
-
 export default function Timetracker() {
-    const token = localStorage.getItem('localToken')
-    const IsLoggedInfo = useSelector(state=>state.isLogged)
-    const users = useSelector(state=>state.Users)
+    const token = useSelector(state=>state.isLogged.token)
     const [Projects, setProjects] = useState([]);
     const [user, setUser] = useState([]);
     let usersDB=[];
-    // const [usersDB, setUsersDB] = useState([]);
     const [projectName, setProjectName] = useState("");
-    // const [userName, setUserName] = useState(usersDB[UserIndex].name);
-    // const [userID, setUserID] = useState(usersDB[UserIndex].id);
     const [projectTo, setProjectTo] = useState();
     const [projectFrom, setProjectFrom] = useState();
     const [projectDate, setProjectDate] = useState();
@@ -32,24 +25,24 @@ export default function Timetracker() {
         .catch(error=> console.error('Error: ', error)
         )
 
-        fetch('http://localhost:9000/getToken', {headers: {'auth-token' : `${token}`}})
+        fetch('http://localhost:9000/getIndex', {headers: {'auth-token' : `${token}`}})
         .then(response=> response.json())
         .then(data=> getUser(data))
         .catch(error=> console.error('Error: ', error)
         )
+        
     },[dbRender]);
 
-
     async function getUser(id){
-        await fetch('http://localhost:9000/users', {headers: {'auth-token' : `${token}`}})
+        await fetch('http://localhost:9000/users')
         .then(response=> response.json())
         .then(data=>  usersDB=data)
         .catch(error=> console.error('Error: ', error))
-        setUser(usersDB.filter(user=> user.email===id.userMail))
-        handleReports(usersDB)
+        setUser(usersDB.filter(user=> user.id===id))
+        handleReports()
     }
 
-    const handleReports = (usersDB) =>{
+    const handleReports = () =>{
         fetch('http://localhost:9000/reports', {headers: {'auth-token' : `${token}`}})
         .then(response=> response.json())
         .then(data => reportsByUser(data))
@@ -60,13 +53,7 @@ export default function Timetracker() {
     }
     //----------------------------------------------------------
     const reportsByUser = (reportData) => {
-            // filter by user id --- >
-            if (user.length > 0){
-            let tempReports =  reportData.filter(value => value.UserId===user[0].id)
-            // console.log(tempReports);
-            setReports(tempReports)
-            } 
-                  
+        setReports(reportData)         
     }
     //----------------------------------------------------------
     const total=()=>{        
@@ -79,8 +66,18 @@ export default function Timetracker() {
     const update=()=>{
         if(projectName&&projectFrom&&projectTo&&projectDate){
             let projectIndex = Projects.findIndex(value=> value.projectName===projectName)
-            let userStatus = moment.duration(projectStatus)
-            let singleReport = {UserName:user[0].name, UserID:user[0].id, ProjectName:projectName, Status:projectStatus, Date:projectDate, From:projectFrom, To:projectTo, Description:reportDescription}
+            // let projectUserStatus = moment.duration(projectStatus)
+            let singleReport = {
+                UserName:user[0].name,
+                UserID:user[0].id,
+                ProjectName:projectName,
+                Status:projectStatus,
+                Date:projectDate,
+                From:projectFrom,
+                To:projectTo,
+                Description:reportDescription
+            }
+            console.log(singleReport);
             const url = 'http://localhost:9000/reports';
             const options = {
                 method: 'POST',
@@ -93,8 +90,14 @@ export default function Timetracker() {
             .then(res => res.json())
             .catch(error=> console.error('Error: ', error))
 
-            let sendStatus = {status:projectStatus, userId:user.id, userStatus:user.status, projectId:Projects[projectIndex].projectID, projectStatus:Projects[projectIndex].projectStatus}
-            
+            let sendStatus = {
+                status:projectStatus,
+                userId:user[0].id,
+                userStatus:user[0].status,
+                projectId:Projects[projectIndex].projectID,
+                projectStatus:Projects[projectIndex].projectStatus
+            }
+            console.log(sendStatus);
             const StatusUrl = 'http://localhost:9000/status';
             const StatusOptions = {
                 method: 'PUT',
@@ -106,7 +109,6 @@ export default function Timetracker() {
             fetch(StatusUrl, StatusOptions)
             .then(res => res.json())
             .catch(error=> console.error('Error: ', error))
-
             renderPage()
         }
     }
@@ -124,7 +126,6 @@ export default function Timetracker() {
     
     return (
         <div>
-
             <div className="tableConatainer">
                 <Table className="tableProjectsHeading">
                     <thead>

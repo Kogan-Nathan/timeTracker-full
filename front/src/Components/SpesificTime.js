@@ -1,22 +1,20 @@
 import React, {useState} from 'react'
+import  { useSelector } from 'react-redux'
 import Table from 'react-bootstrap/Table'
 import moment from 'moment'
-import {useSelector} from 'react-redux'
 import SummaryRow from './SummaryRow'
 
-export default function SpesificTime() {
-    // const reportData = useSelector(state => state.reportData);
-    const users = useSelector(state=>state.Users)
-    const UserIndex = useSelector(state=>state.isLogged.userIndex)
-
+export default function SpesificTime(props) {
     const [reportForSpesific, setReportForSpesific] = useState()
     const [show, setShow] = useState(false)
     const [toDate, setToDate] = useState()
     const [fromDate, setFromDate] = useState()
     const [total, setTotal] = useState()
+    const [renderDB, setRenderDB] = useState(false)
+    const token = useSelector(state=>state.isLogged.token)
 
     function getReports(){
-        fetch('http://localhost:9000/reports')
+        fetch('http://localhost:9000/reports', {headers: {'auth-token' : `${token}`}})
         .then(response=>response.json())
         .then(data=>onlySpesificTime(data))
         .catch(error=> console.error('Error: ', error))
@@ -31,12 +29,12 @@ export default function SpesificTime() {
     }
 
     const onlySpesificTime = (reportArray) =>{
+        renderPage()
         if(toDate&&fromDate){
             // filter by user id --- >
             if (reportArray.length > 0){
-            let tempReports = reportArray.filter(value => value.UserId===users[UserIndex].id)
             // the reports for the spesific time choosen --- >
-            let tempfilter = tempReports.filter(report => moment(report.Date).isBetween(fromDate, toDate))
+            let tempfilter = reportArray.filter(report => moment(report.Date).isBetween(fromDate, toDate))
             setReportForSpesific(tempfilter)    
             totalCalc(tempfilter)
             }
@@ -44,16 +42,17 @@ export default function SpesificTime() {
         }   
     }
 
+    const renderPage=()=>{
+        setRenderDB(!renderDB)
+    }
+
     const totalCalc=(tempfilter)=>{
         let totalHoursArray = tempfilter.map(report => report.Status)        
         totalHoursArray = totalHoursArray.slice(1).reduce((prev, cur)=> moment.duration(cur).add(prev), moment.duration(totalHoursArray[0]))
-
         let convertHours = moment.duration(totalHoursArray).asHours() 
-
         let totalTime = moment.duration(convertHours, 'hours');
         let hours = Math.floor(totalTime.asHours());
         let mins  = Math.floor(totalTime.asMinutes()) - hours * 60;
-
         let result = hours + ":" + mins;
         setTotal(result)
     }

@@ -197,3 +197,11 @@ export const addWorkHours = (userName, userID, projectName,projectFrom,projectTo
         reportStatusData: reportStatus
     }
 }
+
+export const setToken = (email, token) =>{
+    return {
+        type: "UPDATE_TOKEN",
+        emailData: email,
+        tokenData : token
+    };
+};

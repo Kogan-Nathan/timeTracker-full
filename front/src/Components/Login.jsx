@@ -1,11 +1,9 @@
 import React,{useState, useEffect} from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {Link, useHistory} from 'react-router-dom'
-import { isLogged, adminIsLogged } from '../Actions';
-
+import {setToken} from '../Actions'
 
 export default function Login(){
-    const token = localStorage.getItem('localToken')
     const [email, setEmail] = useState()
     const [UsersInfo, setUsersInfo] = useState([])
     const [isEmailValid, setIsEmailValid] = useState(false)
@@ -14,11 +12,8 @@ export default function Login(){
     const [isPasswordValid, setIsPasswordValid] = useState(false)
     const [wrongPasswordSpan, setWrongPasswordSpan] = useState(false)
     const AdminInfo = useSelector(state=>state.Admin)
-    // const UsersInfo = useSelector(state=>state.Users)
-    // const IsLoggedInfo = useSelector(state=>state.isLogged)
-    const dispatch = useDispatch();
     const history = useHistory();
-    const [dbRender, setDbRender] = useState(false)
+    const dispatch = useDispatch()
 
     useEffect(()=>{
         fetch('http://localhost:9000/users')
@@ -26,11 +21,12 @@ export default function Login(){
         .then(data=> setUsersInfo(data))
         .catch(error=> console.error('Error: ', error)
         ) 
-    },[dbRender]);
+    },[UsersInfo]);
 
     //----------------------------------------------------------
     //checkValidEmail & checkValidPassword both check for a specific pattern
     //once they match the pattern the span will dissapear
+
     const checkValidEmail=(e)=>{
         setEmail(e.target.value)
         if (!(/[a-zA-Z0-9._!@#$%^&*()-+]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(e.target.value))) {
@@ -57,7 +53,8 @@ export default function Login(){
         // if true, dispatches isLogged
         if(email==="timeAdmin@zangula.com"){
             if(AdminInfo.email===email&&AdminInfo.password===password){
-                dispatch(adminIsLogged())
+                dispatch(setToken(email, 'adminToken'))
+                history.push('/admin')
             }
             else{
                 setWrongPasswordSpan(true)
@@ -69,12 +66,13 @@ export default function Login(){
             }
             else{
                 let UserIndex = UsersInfo.findIndex(user => user.email === email)
+                localStorage.setItem('UserIndex', UserIndex+1)
                 if(UserIndex===-1){
                     setWrongEmailSpan(true)
                 }
                 else{   
                                  
-                    let passwordData = {passwordBody:password, emailBody:email}
+                    let passwordData = {passwordBody:password, emailBody:email, id:UsersInfo[UserIndex].id}
                     const url = 'http://localhost:9000/usershash';
                     const options = {
                         method: 'POST',
@@ -87,12 +85,12 @@ export default function Login(){
                     .then(res => res.json())
                     .then(res=> login(res.accsessToken))
                     .catch(error=> console.error('Error: ', error))
-                    renderPage()
+                    
 
                     function login(hashedPassword) {
                         if(UsersInfo[UserIndex].email===email && hashedPassword){                       
                             setWrongPasswordSpan(false)
-                            localStorage.setItem('localToken', hashedPassword)
+                            dispatch(setToken(email, hashedPassword))
                             history.push(`/timetracker/user=${UsersInfo[UserIndex].id}`)
                         }
                         else{
@@ -104,9 +102,6 @@ export default function Login(){
         }
     }
 
-    const renderPage=()=>{
-        setDbRender(!dbRender)
-    }
     //----------------------------------------------------------
     return(
         <div className="login-page main">

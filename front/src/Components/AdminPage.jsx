@@ -1,13 +1,10 @@
 import React,{useState, useEffect} from 'react'
-import { useDispatch } from 'react-redux'
 import UserArea from './UserArea'
 import ProjectArea from './ProjectArea'
 import {Link} from 'react-router-dom'
 import { GoTriangleRight } from 'react-icons/go';
 import { FaDollarSign } from 'react-icons/fa';
 import moment from 'moment' 
-import { addNewProject, adminNewProject, deleteProjects, adminDeleteProjects, adminDeleteUsers } from '../Actions';
-
 
 export default function AdminPage(props) {
     const [projects, setProjects] = useState([])
@@ -17,14 +14,10 @@ export default function AdminPage(props) {
     const [TemporaryArray, setTemporaryArray] = useState([])
     const [SearchBar, setSearchBar] = useState("")
     const [dbRender, setDbRender] = useState(false)
-
     const [ProjectName, setProjectsName] = useState()
     const [ProjectClient, setProjectClient] = useState()
     const [ProjectManager, setProjectManager] = useState()
     const [ProjectCost, setProjectCost] = useState(false)
-
-    const dispatch = useDispatch();
-    // const users = useSelector(state=>state.Users)
 
     useEffect(()=>{
         fetch('http://localhost:9000/projects')
@@ -39,10 +32,9 @@ export default function AdminPage(props) {
         ) 
     },[dbRender]);
 
-
     //----------------------------------------------------------    
     function postProject(){
-        let singleProject = {name:ProjectName, client:ProjectClient, status: '21:20', manager:ProjectManager, date:moment().format("YYYY-MM-DD"), cost:ProjectCost}
+        let singleProject = {name:ProjectName, client:ProjectClient, status: '00:00', manager:ProjectManager, date:moment().format("YYYY-MM-DD"), cost:ProjectCost}
         const url = 'http://localhost:9000/projects';
         const options = {
             method: 'POST',
@@ -53,6 +45,7 @@ export default function AdminPage(props) {
         }
         fetch(url, options)
         .then(res => res.json())
+        .then(renderPage())
         .catch(error=> console.error('Error: ', error))
     }
     //----------------------------------------------------------    
@@ -107,7 +100,6 @@ export default function AdminPage(props) {
     //----------------------------------------------------------
     const sendDeleteInfo=()=>{        
         if(props.displayPage==="Users"){
-
             const url = 'http://localhost:9000/users';
             const options = {
                 method: 'DELETE',
@@ -119,7 +111,6 @@ export default function AdminPage(props) {
             fetch(url, options)
             .then(res => res.json())
             .catch(error=> console.error('Error: ', error))
-            // dispatch(adminDeleteUsers(UsersToBeDeleted))
         }
         if(props.displayPage==="Projects"){  
             const url = 'http://localhost:9000/projects';
@@ -133,9 +124,8 @@ export default function AdminPage(props) {
             fetch(url, options)
             .then(res => res.json())
             .catch(error=> console.error('Error: ', error))          
-            // dispatch(deleteProjects(ProjectsToBeDeleted))
-            // dispatch(adminDeleteProjects(ProjectsToBeDeleted))
         }
+        renderPage()
     }
     //----------------------------------------------------------
     const checkUpdates=()=>{
@@ -144,19 +134,12 @@ export default function AdminPage(props) {
                 if(ProjectClient!==undefined){
                     if(ProjectManager!==undefined){
                         postProject()
-                        // dispatch(addNewProject(ProjectName, ProjectClient, ProjectManager, moment().format("YYYY-MM-DD"), ProjectCost))
                     }
-                    else{
-                        alert("Sorry, Project must contain Project Manager")
-                    }
+                    else{alert("Sorry, Project must contain Project Manager")}
                 }
-                else{
-                    alert("Sorry, Project must contain Client")
-                }
+                else{alert("Sorry, Project must contain Client")}
             }
-            else{
-                alert("Sorry, Project must contain Name")
-            }
+            else{alert("Sorry, Project must contain Name")}
         }
         else{
             let projectIndex = projects.findIndex(value=> value.projectName === ProjectName)
@@ -166,22 +149,13 @@ export default function AdminPage(props) {
                 }
                 else{
                     if(ProjectClient!==undefined){
-                        if(ProjectManager!==undefined){
-                            postProject()
-                            // dispatch(addNewProject(ProjectName, ProjectClient, ProjectManager, moment().format("YYYY-MM-DD"), ProjectCost))
-                        }
-                        else{
-                            alert("Sorry, Project must contain Project Manager")
-                        }
+                        if(ProjectManager!==undefined){postProject()}
+                        else{alert("Sorry, Project must contain Project Manager")}
                     }
-                    else{
-                        alert("Sorry, Project must contain Client")
-                    }
+                    else{alert("Sorry, Project must contain Client")}
                 }
             }
-            else{
-                alert("Sorry, this project name is alread in use")
-            }
+            else{alert("Sorry, this project name is alread in use")}
         }
     }
     //----------------------------------------------------------
@@ -192,15 +166,11 @@ export default function AdminPage(props) {
     const Display=()=>{
         if(props.displayPage==="Users"){
             if(SearchBar!==""){
-                return(
-                    (TemporaryArray.map(value=>{return <UserArea key={value.id} dataRender={renderPage} user={value} update={UpdateUsersToBeDeleted}/>}))
-                )   
+                return((TemporaryArray.map(value=>{return <UserArea key={value.id} dataRender={renderPage} user={value} update={UpdateUsersToBeDeleted}  usersDB={users}/>})))   
             } //if the search isnt empty it is showing the search result
             // and if it is empty it is showing the original users DB
             else{
-                return(
-                    (users.map(value=>{return <UserArea key={value.id} dataRender={renderPage} user={value} update={UpdateUsersToBeDeleted}/>}))
-                )                
+                return((users.map(value=>{return <UserArea key={value.id} dataRender={renderPage} user={value} update={UpdateUsersToBeDeleted} usersDB={users}/>})))                
             }
         }
         else if(props.displayPage==="Projects"){

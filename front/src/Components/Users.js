@@ -5,12 +5,12 @@ import UsersRow from './UsersRaw'
 
 
 export default function Users() {
-    const token = localStorage.getItem('localToken')
+    // const token = localStorage.getItem('localToken')
     // const usersData = useSelector(state => state.Users);
     const [usersData, setUsersData] = useState([]);
 
     useEffect(()=>{
-        fetch('http://localhost:9000/users', {headers: {'auth-token' : `${token}`}})
+        fetch('http://localhost:9000/users')
         .then(response=> response.json())
         .then(data=> setUsersData(data))
         .catch(error=> console.error('Error: ', error)
