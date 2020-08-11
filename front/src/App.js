@@ -1,5 +1,5 @@
 import React ,{useState, useEffect} from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
+import { HashRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import Login from './Components/Login'
 import SignUp from './Components/SignUp'
@@ -8,42 +8,44 @@ import Footer from './Components/Footer';
 import Admin from './Components/AdminPage';
 import Homepage from './Components/HomePage';
 import UserPage from './Components/UserPage'
+import pageNotFound from './Components/pageNotFound'
 import './App.css';
 
 function App() {
-
+  let UserIndex = parseInt(localStorage.getItem('UserId'))
+  let UserId = parseInt(localStorage.getItem('UserId'))
   const [users, setUsers] = useState([]);
-  let UserIndex = localStorage.getItem('UserIndex')
-  const [dbRender, setDbRender] = useState(false)
   const IsLoggedInfo = useSelector(state=> state.isLogged.email)
   const token = useSelector(state=>state.isLogged.token)
-  const [userName,setUserName] = useState()
+  const [dbRender, setDbRender] = useState(false)
+
   useEffect(()=>{
     fetch('http://localhost:9000/users')
     .then(response=> response.json())
-    .then(data=> setUsers(data))
+    .then(data=> handleUsers(data))
     .catch(error=> console.error('Error: ', error))
-   
 
   },[dbRender]);
-
+  //----------------------------------------------------------
+  const handleUsers=(usersDB)=>{
+    setUsers(usersDB)
+  }
+  //----------------------------------------------------------
   const PrivateRoute = ({component: Component})=> {
-    fetch('http://localhost:9000/getIndex', {headers: {'auth-token' : `${token}`}})
-    .then(response=> response.json())
-    .then(data=> UserIndex = data)
-    .catch(error=> console.error('Error: ', error))
+      fetch('http://localhost:9000/getIndex', {headers: {'auth-token' : `${token}`}})
+      .then(response=> response.json())
+      .then(data=> UserIndex = data)
+      .catch(error=> console.error('Error: ', error))
 
     return(
       <Route render={()=>{
         if(IsLoggedInfo){
-          let userid = users.findIndex(users => users.email === IsLoggedInfo) + 1 
-          setUserName(users[userid-1].name)
-          if(UserIndex == userid){
+          if( UserIndex === UserId){
             return(
               <Component/>
             )
           }
-          if(UserIndex!==userid){
+          if(UserIndex !== UserId){
             return(
               <Redirect to="/login" />
             )
@@ -51,36 +53,17 @@ function App() {
         }
         else{
           return(
-            <Redirect to="/login" />
+            <Redirect to="/login"/>
           )
         }
       }
     }/>
     )
   }
-
-
-  // const IsLoggedRoute = ({component: Component})=> {
-  //   return(
-  //     <Route render={()=>{
-  //       if(IsLoggedInfo){
-  //         return(
-  //           <Redirect to="/" />
-  //         )
-  //       }
-  //       else{
-  //         return(
-  //           <Component/>
-  //         )
-  //       }
-  //     }}/>
-  //   )
-  // }
-
+  //----------------------------------------------------------
   const AdminRoute = ({component: Component})=> {
     return(
       <Route render={()=>{
-        setUserName("")
         if(IsLoggedInfo==="timeAdmin@zangula.com"){
             return(
               <Component />
@@ -94,20 +77,21 @@ function App() {
         }}/>
     )
   }
-
+  //----------------------------------------------------------
   const renderPage=()=>{
-    setDbRender(!dbRender)
-}
-  
+    setDbRender(true)
+  }
+
+  //----------------------------------------------------------
   return (
     <div className="App">
       <Router>
         {/* Header */}
-        <Header userName={userName}/>
+        <Header/>
         <Switch>
           {/* Routes */}
           <Route exact path="/" component={()=>{return <Homepage/>}}/>
-          <Route exact path="/signup" component={()=>{return <SignUp/>}}/>
+          <Route exact path="/signup" component={()=>{return <SignUp reRender={renderPage}/>}}/>
           <Route exact path="/login" component={()=>{return <Login/>}}/>
           <AdminRoute exact path="/admin" component={()=>{return <Admin displayPage={"Users"} class={true} />
           }}/> 
@@ -116,23 +100,24 @@ function App() {
           <AdminRoute exact path="/admin/projects" component={()=>{return <Admin displayPage={"Projects"} class={false}/>
           }}/>
           {users.map((user,index)=>{
-            return <PrivateRoute exact path={"/timetracker/user="+user.id} key={"user"+index} component={()=>{return <UserPage displayPage={"Timetracker"}/>}}/>
+            return <PrivateRoute exact path={"/timetracker/user="+user.id} key={"user"+index} component={()=>{return <UserPage userid={UserId} displayPage={"Timetracker"}/>}}/>
           })}
           {users.map((user,index)=>{
-            return <PrivateRoute exact path={"/project/user="+user.id} key={"user"+index} component={()=>{return <UserPage displayPage={"Project"}/>}}/>
+            return <PrivateRoute exact path={"/project/user="+user.id} key={"user"+index} component={()=>{return <UserPage userid={UserId} displayPage={"Project"}/>}}/>
           })}
           {users.map((user,index)=>{
-            return <PrivateRoute exact path={"/users/user="+user.id} key={"user"+index} component={()=>{return <UserPage displayPage={"Users"}/>}}/>
+            return <PrivateRoute exact path={"/users/user="+user.id} key={"user"+index} component={()=>{return <UserPage userid={UserId} displayPage={"Users"}/>}}/>
           })}
           {users.map((user,index)=>{
-            return <PrivateRoute exact path={"/last7days/user="+user.id} key={"user"+index} component={()=>{return <UserPage displayPage={"Last 7 days"}/>}}/>
+            return <PrivateRoute exact path={"/last7days/user="+user.id} key={"user"+index} component={()=>{return <UserPage userid={UserId} displayPage={"Last 7 days"}/>}}/>
           })}
           {users.map((user,index)=>{
-            return <PrivateRoute exact path={"/thismonth/user="+user.id} key={"user"+index} component={()=>{return <UserPage displayPage={"This month"}/>}}/>
+            return <PrivateRoute exact path={"/thismonth/user="+user.id} key={"user"+index} component={()=>{return <UserPage userid={UserId} displayPage={"This month"}/>}}/>
           })}
           {users.map((user,index)=>{
-            return <PrivateRoute exact path={"/spesifictime/user="+user.id} key={"user"+index} component={()=>{return <UserPage displayPage={"Spesific time"}/>}}/>
+            return <PrivateRoute exact path={"/spesifictime/user="+user.id} key={"user"+index} component={()=>{return <UserPage userid={UserId} displayPage={"Spesific time"}/>}}/>
           })}
+          <Route exact path="*" component={pageNotFound}/>
         </Switch>
         <Footer/>
       </Router>

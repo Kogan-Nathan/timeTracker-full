@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from 'react'
-import  { useSelector } from 'react-redux'
+import React from 'react'
 import { useHistory } from "react-router-dom";
 import Timetracker from './Timetracker'
 import Last7days from './Last7days'
@@ -8,25 +7,12 @@ import Users from './Users'
 import ThisMonth from './ThisMonth'
 import SpesificTime from './SpesificTime'
 
-export default function AdminPage(props) {
+export default function UserPage(props) {
 
-    const token = useSelector(state=>state.isLogged.token)
-    const [UserIndex, setUserIndex] = useState(NaN)
+    const UserIndex= props.userid
     const history = useHistory();
-    const [dbRender, setDbRender] = useState(false)
-
-    useEffect(()=>{  
-        fetch('http://localhost:9000/getIndex', {headers: {'auth-token' : `${token}`}})
-        .then(response=> response.json())
-        .then(data=>setUserIndex(data))
-        .catch(error=> console.error('Error: ', error))
-    },[dbRender]);
-
-    const renderPage=()=>{
-        setDbRender(!dbRender)
-    }
-
     //----------------------------------------------------------
+    // changes visual information
     const Display=()=>{
         if(props.displayPage==="Users"){
             return <Users index={UserIndex}/>
@@ -48,8 +34,8 @@ export default function AdminPage(props) {
         }
     }
     //----------------------------------------------------------
+    // changes url by navigation
     const changeLocation = (e) =>{
-        renderPage()
         if (e.target.value === "last 7 days"){
             history.push('/last7days/user='+UserIndex) 
         }
@@ -69,22 +55,34 @@ export default function AdminPage(props) {
             history.push('/users/user='+UserIndex)    
         }
     }
-
-
+    //----------------------------------------------------------
     return (
         <div className="main">
             <div className="nav-bar_container">
                 <ul className="navbar">       
-                    <button className="nav-links" value="TimeTracker" onClick={(e)=>changeLocation(e)}>TimeTracker</button>
+                    <button className="nav-links" value="TimeTracker" onClick={(e)=>changeLocation(e)}>
+                        TimeTracker
+                    </button>
                     <select className="select-box" onChange={(e)=>changeLocation(e)}>
-                        <option className="select-items">Summary</option>
-                        <option className="select-items" value="last 7 days">last 7 days</option>
-                        <option className="select-items" value="this month">this month</option>
-                        <option className="select-items" value="spesific time">spesific time</option>
+                        <option className="select-items" style={{display:"none"}}>
+                            Summary
+                        </option>
+                        <option className="select-items" value="last 7 days">
+                            Last 7 days
+                        </option>
+                        <option className="select-items" value="this month">
+                            This month
+                        </option>
+                        <option className="select-items" value="spesific time">
+                            Spesific time
+                        </option>
                     </select>
-                    <button className="nav-links" value="Projects" onClick={(e)=>changeLocation(e)}>Projects</button>
-                    <button className="nav-links" value="Users" onClick={(e)=>changeLocation(e)}>Users</button>
-
+                    <button className="nav-links" value="Projects" onClick={(e)=>changeLocation(e)}>
+                        Projects
+                    </button>
+                    <button className="nav-links" value="Users" onClick={(e)=>changeLocation(e)}>
+                        Users
+                    </button>
                 </ul>
             </div>
             {Display()}

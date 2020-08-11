@@ -1,7 +1,7 @@
 import React,{useState, useEffect} from 'react'
-import UserArea from './UserArea'
-import ProjectArea from './ProjectArea'
 import {Link} from 'react-router-dom'
+import ContentProject from './ContentProject'
+import ContentUser from './ContentUser'
 import { GoTriangleRight } from 'react-icons/go';
 import { FaDollarSign } from 'react-icons/fa';
 import moment from 'moment' 
@@ -9,15 +9,15 @@ import moment from 'moment'
 export default function AdminPage(props) {
     const [projects, setProjects] = useState([])
     const [users, setUsers] = useState([])
-    const [UsersToBeDeleted, setUsersToBeDeleted] = useState([])
     const [ProjectsToBeDeleted, setProjectsToBeDeleted] = useState([])
+    const [UsersToBeDeleted, setUsersToBeDeleted] = useState([])
     const [TemporaryArray, setTemporaryArray] = useState([])
     const [SearchBar, setSearchBar] = useState("")
-    const [dbRender, setDbRender] = useState(false)
-    const [ProjectName, setProjectsName] = useState()
-    const [ProjectClient, setProjectClient] = useState()
     const [ProjectManager, setProjectManager] = useState()
+    const [ProjectClient, setProjectClient] = useState()
+    const [ProjectName, setProjectsName] = useState()
     const [ProjectCost, setProjectCost] = useState(false)
+    const [dbRender, setDbRender] = useState(false)
 
     useEffect(()=>{
         fetch('http://localhost:9000/projects')
@@ -32,9 +32,18 @@ export default function AdminPage(props) {
         ) 
     },[dbRender]);
 
-    //----------------------------------------------------------    
+    //---------------------------------------------------------- 
+    // add new project    
     function postProject(){
-        let singleProject = {name:ProjectName, client:ProjectClient, status: '00:00', manager:ProjectManager, date:moment().format("YYYY-MM-DD"), cost:ProjectCost}
+        let singleProject = {
+            name:ProjectName,
+            client:ProjectClient,
+            status: '00:00',
+            manager:ProjectManager,
+            date:moment().format("YYYY-MM-DD"),
+            cost:ProjectCost
+        }
+        
         const url = 'http://localhost:9000/projects';
         const options = {
             method: 'POST',
@@ -48,7 +57,8 @@ export default function AdminPage(props) {
         .then(renderPage())
         .catch(error=> console.error('Error: ', error))
     }
-    //----------------------------------------------------------    
+    //----------------------------------------------------------  
+    // delete users   
     function UpdateUsersToBeDeleted(UsersID){
         if(UsersToBeDeleted.length===0){
             setUsersToBeDeleted(UsersToBeDeleted.concat(UsersID))
@@ -64,7 +74,8 @@ export default function AdminPage(props) {
             }
         }
     }
-    //----------------------------------------------------------    
+    //---------------------------------------------------------- 
+    // delete projects   
     function UpdateProjectsToBeDeleted(ProjectName){
         if(ProjectsToBeDeleted.length===0){
             setProjectsToBeDeleted(ProjectsToBeDeleted.concat(ProjectName))
@@ -85,19 +96,22 @@ export default function AdminPage(props) {
         //onKeyUp search updates a temporary array that is displayed through map 
         if(props.displayPage==="Users"){
             const tempArray = users.filter(value => {
-                let lowerCaseName = value.name.toLowerCase();
-                 return lowerCaseName.includes(e.target.value);})
-                     setTemporaryArray(tempArray)
-                    }
+            let lowerCaseName = value.name.toLowerCase();
+                return lowerCaseName.includes(e.target.value);
+            })
+            setTemporaryArray(tempArray)
+        }
         if(props.displayPage==="Projects"){
             const tempArray = projects.filter(value => {
-                let lowerCaseName = value.projectName.toLowerCase();
-                 return lowerCaseName.includes(e.target.value);})
-                     setTemporaryArray(tempArray)
+            let lowerCaseName = value.projectName.toLowerCase();
+                return lowerCaseName.includes(e.target.value);
+            })
+            setTemporaryArray(tempArray)
         }
         setSearchBar(e.target.value)
     }
     //----------------------------------------------------------
+    // send the info to be delete from database 
     const sendDeleteInfo=()=>{        
         if(props.displayPage==="Users"){
             const url = 'http://localhost:9000/users';
@@ -128,6 +142,7 @@ export default function AdminPage(props) {
         renderPage()
     }
     //----------------------------------------------------------
+    // check if the project contains all the right info
     const checkUpdates=()=>{
         if(projects.length===0){
             if(ProjectName!==undefined){
@@ -166,14 +181,21 @@ export default function AdminPage(props) {
     const Display=()=>{
         if(props.displayPage==="Users"){
             if(SearchBar!==""){
-                return((TemporaryArray.map(value=>{return <UserArea key={value.id} dataRender={renderPage} user={value} update={UpdateUsersToBeDeleted}  usersDB={users}/>})))   
+                return((TemporaryArray.map(value=>{
+                    return <ContentUser key={value.id} dataRender={renderPage} user={value}
+                    update={UpdateUsersToBeDeleted}  usersDB={users}/>
+                })))   
             } //if the search isnt empty it is showing the search result
             // and if it is empty it is showing the original users DB
             else{
-                return((users.map(value=>{return <UserArea key={value.id} dataRender={renderPage} user={value} update={UpdateUsersToBeDeleted} usersDB={users}/>})))                
+                return((users.map(value=>{
+                    return <ContentUser key={value.id} dataRender={renderPage} user={value}
+                    update={UpdateUsersToBeDeleted} usersDB={users}/>
+                })))                
             }
         }
         else if(props.displayPage==="Projects"){
+            //if the search isnt empty it is showing the search result
             if(SearchBar!==""){
                 return(
                     <div className="area">
@@ -203,11 +225,14 @@ export default function AdminPage(props) {
                                 <button className="add-butt addnew" onClick={checkUpdates}>Add Project</button>
                             </div>
                         </div>
-                        {TemporaryArray.map(value=>{return <ProjectArea key={value.projectID} dataRender={renderPage} project={value} update={UpdateProjectsToBeDeleted} projectsDB={projects}/>})}
+                        {TemporaryArray.map(value=>{
+                            return <ContentProject key={value.projectID} dataRender={renderPage} project={value}
+                            update={UpdateProjectsToBeDeleted} projectsDB={projects}/>
+                            })}
                     </div>
                 )
-            } //if the search isnt empty it is showing the search result
-            // and if it is empty it is showing the original users DB
+            } 
+            // if the search input is empty it is showing the original users DB
             else{
                 return(
                     <div className="area">
@@ -237,7 +262,10 @@ export default function AdminPage(props) {
                                 <button className="add-butt addnew" onClick={checkUpdates}>Add Project</button>
                             </div>
                         </div>
-                        {projects.map(value=>{return <ProjectArea key={value.projectID} dataRender={renderPage} project={value} update={UpdateProjectsToBeDeleted} projectsDB={projects}/>})}
+                        {projects.map(value=>{
+                            return <ContentProject key={value.projectID} dataRender={renderPage} project={value}
+                            update={UpdateProjectsToBeDeleted} projectsDB={projects}/>
+                            })}
                     </div>
                 )                
             }

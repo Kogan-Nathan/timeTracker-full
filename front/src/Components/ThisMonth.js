@@ -2,38 +2,45 @@ import React, {useState, useEffect} from 'react'
 import  { useSelector } from 'react-redux'
 import Table from 'react-bootstrap/Table'
 import moment from 'moment'
-import SummaryRow from './SummaryRow'
+import RowSummary from './RowSummary'
 
-export default function ThisMonth(props) {
+export default function ThisMonth() {
 
     const [reportForMonth, setReportForMonth] = useState([])
-    const [total, setTotal] = useState()
-    const [renderDB, setRenderDB] = useState(false)
+    const [totalHours, setTotalHours] = useState()
     const token = useSelector(state=>state.isLogged.token)
 
     //----------------------------------------------------------
     useEffect(()=>{
+        let isCanclled = false
         fetch('http://localhost:9000/reports', {headers: {'auth-token' : `${token}`}})
         .then(response=> response.json())
-        .then(data=> onlyThisMonth(data))
+        .then(data=> {
+            if(!isCanclled){
+                onlyThisMonth(data)
+            }})
         .catch(error=> console.error('Error: ', error))
-    },[reportForMonth]);
+            
+        return()=>{
+            isCanclled = true
+        }
+    },[token]);
 
     //----------------------------------------------------------
-    const onlyThisMonth = (reportData) =>{ 
-        renderPage()
-        if (reportData.length > 0){
+    // filtering reports for the current month
+    const onlyThisMonth = (reportByUser) =>{ 
+        if (reportByUser.length > 0){
             let startOfMonth = moment().startOf('month')
             let endOfMonth   = moment().endOf('month')
             // the reports for the current month --- >
-            let tempfilter = reportData.filter(report => moment(report.Date).isBetween(startOfMonth, endOfMonth))
-            setReportForMonth(tempfilter)                          
-            totalCalc(tempfilter)
+            let tempfilter = reportByUser.filter(report => moment(report.Date).isBetween(startOfMonth, endOfMonth, undefined, []))
+            setReportForMonth(tempfilter)                  
+            totalHoursCalc(tempfilter)
         }
     }
     //----------------------------------------------------------
-    const totalCalc=(tempfilter)=>{
-        renderPage()
+    // calculating the total hours for current month, and formating it to "00:00"
+    const totalHoursCalc=(tempfilter)=>{
         let totalHoursArray = tempfilter.map(report => report.Status)        
         totalHoursArray = totalHoursArray.slice(1).reduce((prev, cur)=> moment.duration(cur).add(prev), moment.duration(totalHoursArray[0]))
         let convertHours = moment.duration(totalHoursArray).asHours() 
@@ -41,15 +48,9 @@ export default function ThisMonth(props) {
         let hours = Math.floor(totalTime.asHours());
         let mins  = Math.floor(totalTime.asMinutes()) - hours * 60;
         let result = hours + ":" + mins;
-        setTotal(result)
+        setTotalHours(result)
     }
     //----------------------------------------------------------
-
-    const renderPage=()=>{
-        setRenderDB(!renderDB)
-    }
-
-
     return (
         <div className="main">
             <h3 className="h-spesific"> This Month </h3>
@@ -65,9 +66,9 @@ export default function ThisMonth(props) {
                     </thead>
                 </Table>
             </div>
-            {reportForMonth.map((value,index)=>{return <SummaryRow key={"report"+index} report={value}/>})}        
+            {reportForMonth.map((value,index)=>{return <RowSummary key={"report"+index} report={value}/>})}        
             <div>
-                <button className="total-butt" style={{marginTop:"20px"}}> Total: {total} </button>
+                <button className="total-butt" style={{marginTop:"20px"}}> Total: {totalHours} </button>
             </div>
         </div>
     )

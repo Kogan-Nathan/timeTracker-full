@@ -82,10 +82,11 @@ li{
   float: right;
 }
 
-.login-butt{
+.login-butt, .butt-404{
   border: solid 2px #00C9CD;
   background-color: transparent;
-  padding: 15px 28px
+  padding: 15px 28px;
+  color: #00C9CD;
 }
 
 .total-butt{
@@ -99,7 +100,7 @@ li{
   padding: 15px 20px
 }
 
-.login-butt:visited, .login-butt:active .login-butt{
+.login-butt:visited, .login-butt:active .login-butt, .butt-404:visited, .butt-404:active{
   color: #00C9CD;
 }
 
@@ -111,6 +112,12 @@ li{
   color: #242424;
   background-color: #fff;
   border-color: #fff;
+}
+
+.butt-404:hover{
+  color: #242424;
+  background-color: #fff;
+  border-color: #242424;
 }
 
 .signup-butt:hover, .signup-butt a:hover{
@@ -127,7 +134,7 @@ li{
   margin-top: 10px;
 }
 
-.login-butt, .signup-butt, .logout-butt, .total-butt{
+.login-butt, .signup-butt, .logout-butt, .total-butt, .butt-404{
   margin-left: 20px;
   border-radius: 50px;
   font-size: 16px;
@@ -387,10 +394,12 @@ input[type=checkbox]:checked:after {
 }
 
 .trHeading{
+  display: inline-block;
   font-weight: 700;
   font-size: 22px;
   background-color: #242424;
   color: white;
+  /* width: 100%; */
 }
 
 table{
@@ -399,17 +408,24 @@ table{
 
 td{
   border: solid 1px #000;
-  width: 200px;
+  width: 10vw;
   vertical-align: middle;
   padding: 25px 0px;
+  word-break: break-all;
 }
 
 th{
   border: solid 1px #242424;
-  width: 335px;
+  width: 400px;
   vertical-align: middle;
   font-weight: 400;
   padding: 10px 0px;
+}
+
+.noBorder{
+  border: 1px solid #000;
+  border-bottom: none;
+  /* background-color: tomato; */
 }
 
 .td-spesific{
@@ -979,9 +995,7 @@ th{
   .grid-userNewReport{
     grid-gap: 0.4rem;
   }
-  .tableConatainer{
-    width: 650px;
-  }
+
   .trHeading{
     font-size: 18px;
   }
@@ -999,7 +1013,7 @@ th{
     width: 650px;
   }
   td{
-    width: 130px;
+    max-width: 50px;
   }
 }
 
@@ -1250,7 +1264,7 @@ input[type=time]::-webkit-calendar-picker-indicator{
     width: 300px;
   }
   .reportTd{
-    width: 48px;
+    /* max-width: 38px; */
     display: inline-block;
     word-break: break-all;
     height: 30px;
@@ -1276,24 +1290,79 @@ input[type=time]::-webkit-calendar-picker-indicator{
   }
 
   td{
-    width: 85px;
+    width: 13.2vw;
     display: inline-block;
     word-break: break-all;
     height: 30px;
     font-size: 10px;
-    padding: 5px
+    padding: 5px;
+    border: none !important;
   }
 }
 
+#svg-spinner{
+  -webkit-transition-property: -webkit-transform;
+  transition-duration: 3s;
+  -webkit-animation-name: rotate;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+  
+  -moz-transition-property: -moz-transform;
+  -moz-animation-name: rotate; 
+  -moz-animation-duration: 3s; 
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-timing-function: linear;
+  
+  transition-property: transform;
+  animation-name: rotate; 
+  animation-duration: 3s; 
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@-webkit-keyframes rotate {
+    from {-webkit-transform: rotate(0deg);}
+    to {-webkit-transform: rotate(360deg);}
+}
+
+@-moz-keyframes rotate {
+    from {-moz-transform: rotate(0deg);}
+    to {-moz-transform: rotate(360deg);}
+}
+
+@keyframes rotate {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}
+}
+
+/* spinner positioning */
+
+#html-spinner, #svg-spinner{
+  position:relative;
+}
 
 
+.notfound{
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+}
 
-/* @media only screen and (max-width: 600px) {
-  .adminNav-grid{
-    grid-template-columns: 1fr 45% 45% 1fr;
+@media only screen and (max-width: 360px) {
+  .notfound {
+    padding-left: 15px;
+    padding-right: 15px;
+    text-align: center;
+    width: 75%;
   }
-  .addAdmin-butt{
-    padding: 15px 15px;
+  .notfound h2{
+    font-size: 16pt;
   }
-} */
-
+  .notfound p{
+    font-size: 10pt;
+  }
+}

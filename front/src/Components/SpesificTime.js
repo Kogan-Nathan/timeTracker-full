@@ -1,16 +1,15 @@
 import React, {useState} from 'react'
 import  { useSelector } from 'react-redux'
+import RowSummary from './RowSummary'
 import Table from 'react-bootstrap/Table'
 import moment from 'moment'
-import SummaryRow from './SummaryRow'
 
-export default function SpesificTime(props) {
+export default function SpesificTime() {
     const [reportForSpesific, setReportForSpesific] = useState()
-    const [show, setShow] = useState(false)
     const [toDate, setToDate] = useState()
     const [fromDate, setFromDate] = useState()
-    const [total, setTotal] = useState()
-    const [renderDB, setRenderDB] = useState(false)
+    const [totalHours, setTotalHours] = useState()
+    const [show, setShow] = useState(false)
     const token = useSelector(state=>state.isLogged.token)
 
     function getReports(){
@@ -19,34 +18,42 @@ export default function SpesificTime(props) {
         .then(data=>onlySpesificTime(data))
         .catch(error=> console.error('Error: ', error))
     }
-
+    //----------------------------------------------------------
+    // get the chosen dates
     const handleToDate=(e)=>{
         setToDate(e.target.value) 
     }
-
+    //----------------------------------------------------------
     const handleFromDate=(e)=>{
         setFromDate(e.target.value)
     }
-
+    //----------------------------------------------------------
+    // filtering reports for spesific chosen duration
     const onlySpesificTime = (reportArray) =>{
-        renderPage()
         if(toDate&&fromDate){
-            // filter by user id --- >
-            if (reportArray.length > 0){
-            // the reports for the spesific time choosen --- >
-            let tempfilter = reportArray.filter(report => moment(report.Date).isBetween(fromDate, toDate))
-            setReportForSpesific(tempfilter)    
-            totalCalc(tempfilter)
+            if(fromDate < toDate){
+                if (reportArray.length > 0){
+                // the reports for the spesific time choosen --- >
+                let tempfilter = reportArray.filter(report => moment(report.Date).isBetween(fromDate, toDate, undefined, []))
+                setReportForSpesific(tempfilter)    
+                totalHoursCalc(tempfilter)
+                }
+                setShow(true)
             }
-        setShow(true)
-        }   
+            if(fromDate > toDate){
+                if (reportArray.length > 0){
+                // the reports for the spesific time choosen --- >
+                let tempfilter = reportArray.filter(report => moment(report.Date).isBetween(toDate, fromDate, undefined, []))
+                setReportForSpesific(tempfilter)    
+                totalHoursCalc(tempfilter)
+                }
+                setShow(true)
+            }    
+        }
     }
-
-    const renderPage=()=>{
-        setRenderDB(!renderDB)
-    }
-
-    const totalCalc=(tempfilter)=>{
+    //----------------------------------------------------------
+    // calculating the total hours for the chosen time, and formating it to "00:00"
+    const totalHoursCalc=(tempfilter)=>{
         let totalHoursArray = tempfilter.map(report => report.Status)        
         totalHoursArray = totalHoursArray.slice(1).reduce((prev, cur)=> moment.duration(cur).add(prev), moment.duration(totalHoursArray[0]))
         let convertHours = moment.duration(totalHoursArray).asHours() 
@@ -54,9 +61,9 @@ export default function SpesificTime(props) {
         let hours = Math.floor(totalTime.asHours());
         let mins  = Math.floor(totalTime.asMinutes()) - hours * 60;
         let result = hours + ":" + mins;
-        setTotal(result)
+        setTotalHours(result)
     }
-
+    //----------------------------------------------------------
     return (
         <div>
             <h3 className="h-spesific"> Choose a Spesific Time </h3>
@@ -64,9 +71,15 @@ export default function SpesificTime(props) {
                 <thead>
                     <tr>
                         <td style={{border:"2px #fff solid"}} colSpan="2" className="td-spesific"> From 
-                        <input className="td-spesific cursor" type="date" placeholder="dd/mm/yyyy" max={new Date().toISOString().split("T")[0]} onChange={handleFromDate}></input></td>
+                            <input className="td-spesific cursor" type="date" placeholder="dd/mm/yyyy"
+                                max={new Date().toISOString().split("T")[0]} onChange={handleFromDate}>
+                            </input>
+                        </td>
                         <td style={{border:"2px #fff solid"}} colSpan="2" className="td-spesific"> To 
-                        <input className="td-spesific cursor" type="date" placeholder="dd/mm/yyyy" max={new Date().toISOString().split("T")[0]} onChange={handleToDate} ></input></td>
+                            <input className="td-spesific cursor" type="date" placeholder="dd/mm/yyyy"
+                                max={new Date().toISOString().split("T")[0]} onChange={handleToDate}>
+                            </input>
+                        </td>
                     </tr> 
                 </thead>
             </Table>
@@ -82,10 +95,10 @@ export default function SpesificTime(props) {
                     </thead> 
                 </Table>
             </div>
-            {show &&
-            reportForSpesific.map((value,index)=>{return <SummaryRow key={"report"+index} report={value}/>})
-            }
-            <div> <button className="login-butt" style={{marginTop:"20px"}} onClick={()=> getReports()} > Total: {total} </button> </div>
+            {show && reportForSpesific.map((value,index)=>{return <RowSummary key={"report"+index} report={value}/>})}
+            <div>
+                <button className="login-butt" style={{marginTop:"20px"}} onClick={()=> getReports()}>Total: {totalHours}</button>
+            </div>
         </div>
     )
 }
