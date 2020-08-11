@@ -55,9 +55,21 @@ timedb.users = ()=> {
     });
 };
 
+
+timedb.adminInfo =()=>{
+    return new Promise((resolve, reject)=>{
+        db.query(`SELECT * FROM admintable`, (err,results)=>{
+            if(err){
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+}
+
 timedb.postReport = (sql, rep)=> {
     return new Promise((resolve, reject)=>{
-        db.query(sql, [rep.UserName, rep.UserID, rep.ProjectName, rep.Status, rep.Date, rep.From, rep.To, rep.Description], (err,results)=>{
+        db.query(sql, [rep.UserName, rep.UserID, rep.ProjectName, rep.ProjectId, rep.Status, rep.Date, rep.From, rep.To, rep.Description], (err,results)=>{
             if(err){
                 return reject(err);
             }
@@ -122,6 +134,17 @@ timedb.updateUserInfo =(sql) =>{
 }
 
 timedb.updateProjectInfo =(sql) =>{
+    return new Promise((resolve, reject)=>{
+        db.query(sql, (err,results)=>{
+            if(err){
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+}
+
+timedb.updateReportInfo =(sql) =>{
     return new Promise((resolve, reject)=>{
         db.query(sql, (err,results)=>{
             if(err){
