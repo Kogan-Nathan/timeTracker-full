@@ -84,8 +84,7 @@ export default function SignUp(props){
     const handleMatchPass=(e)=>{
         if(e.target.value === tempPassword){
                 setPassword(e.target.value)
-                document.getElementById("errorPass2").innerHTML="";
-                
+                document.getElementById("errorPass2").innerHTML="";    
         }
         else{
             document.getElementById("errorPass2").innerHTML="passwords don't match";
@@ -97,7 +96,7 @@ export default function SignUp(props){
         // submit action changes the url - we prevent it with e.preventDefault()
         e.preventDefault()
         setIsLoading(true)
-        if (name && email && password && phone){
+        if (name && email && password){
             let UserIndex = users.findIndex(user => user.email === email)
             if(UserIndex===-1){ 
                    
@@ -174,26 +173,30 @@ export default function SignUp(props){
             <h1>Sign up</h1>
             {isLoading? <LoadingSpinner/> : <form onSubmit={signed}>
                 <div>
+                <span>*</span>
                     <input className="inputArea" type="text" name="name" placeholder="Name"
                         onChange={handleName} required/>
                     <p id="nameBlank"></p>
                 </div>
                 <div>
+                <span>*</span>
                     <input className="inputArea" type="email" name="email" placeholder="Email"
                         onChange={handleEmail} required/>
                     <p id='errorEmail'></p>
                 </div>
                 <div>
                     <input className="inputArea" type="text" name="phone" placeholder="Phone Number"
-                        onChange={handlePhone} required/>
+                        onChange={handlePhone}/>
                     <p id='errorPhone'></p>
                 </div>
                 <div>
+                <span>*</span>
                     <input className="inputArea" type="password" name="password1" placeholder="Password"
                         onChange={handlePass} required/>
                     <p id='errorPass'></p>
                 </div>
                 <div>
+                <span>*</span>
                     <input className="inputArea" type="password" name="password2" placeholder="Configure Password"
                         onChange={handleMatchPass} required/>
                     <p id='errorPass2'></p>

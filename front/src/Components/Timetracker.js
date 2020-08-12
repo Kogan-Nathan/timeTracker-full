@@ -42,7 +42,7 @@ export default function Timetracker() {
 
         return()=>{
             isCanclled = true;
-        }   
+        }  
     },[dbRender]);
     //----------------------------------------------------------
     // set the logged in user with the token information
@@ -66,19 +66,13 @@ export default function Timetracker() {
     //----------------------------------------------------------
     // set state with all the reports
     const reportsByUser = (reportData) => {
-        setReports(reportData)         
-    }
-    //----------------------------------------------------------
-    // calculating the total hours for new report, and formating it to "00:00"
-    const totalHoursCalc=()=>{        
-        if (projectFinish && projectStart){
-            let hours = moment.utc(moment(projectFinish,"HH:mm").diff(moment(projectStart,"HH:mm"))).format("HH:mm")
-            setProjectStatus(hours)
-        }
+        let sortedReports = reportData.sort((a,b) => new Date(b.Date) - new Date(a.Date))
+        setReports(sortedReports)         
     }
     //----------------------------------------------------------
     // checks if all the inputs are filled
-    const update=()=>{
+    const update=(e)=>{
+        e.preventDefault()
         if(projectName&&projectStart&&projectFinish&&projectDate){
             // get the index of the project
             let projectIndex = Projects.findIndex(value=> value.projectName===projectName)
@@ -131,17 +125,37 @@ export default function Timetracker() {
     //----------------------------------------------------------
     const convertDate = (e) =>{
         setProjectDate(e.target.value)
-        totalHoursCalc()
     }
+    //----------------------------------------------------------
+    // set the state when projectStart / projectFinish / projectDate updates 
+    // calculating the total hours for new report, and formating it to "00:00"
+    useEffect(()=>{       
+        if (projectFinish && projectStart){
+            let hours = moment.utc(moment(projectFinish,"HH:mm").diff(moment(projectStart,"HH:mm"))).format("HH:mm")
+            setProjectStatus(hours)
+        }
+    },[projectFinish, projectStart, projectDate])
+    //----------------------------------------------------------
+    // set the state only when projectStart updates
+    useEffect(()=>{ 
+        if(projectStart){
+            setProjectStart(projectStart)
+        }
+    },[projectStart]);
+    //----------------------------------------------------------
+    // set the state only when projectStart updates
+    useEffect(()=>{ 
+        if(projectFinish){
+            setProjectFinish(projectFinish)
+        }
+    },[projectFinish]);
     //----------------------------------------------------------
     const handleStart=(e)=>{
         setProjectStart(e.target.value)
-        totalHoursCalc()
     }
-    //----------------------------------------------------------
+
     const handleFinish=(e)=>{
         setProjectFinish(e.target.value)
-        totalHoursCalc()
     }
     //----------------------------------------------------------
     const renderPage=()=>{
@@ -170,23 +184,22 @@ export default function Timetracker() {
                             </tr> 
                         </thead>
                     </Table>
+                    <form onSubmit={update}>
                     <div className="grid-userNewReport" style={{width:"100%", marginBottom:"20px"}}>
-                        <select className="inputTime select1" onChange={(e)=>setProjectName(e.target.value)}>
+                        <select className="inputTime select1" onChange={(e)=>setProjectName(e.target.value)} required>
                             <option>Select Project</option>
                             {Projects.map((value,index)=>{
                                 return <option key={"project"+index}>{value.projectName}</option>
                             })}
                         </select>
-                        <div className="from">
-                            <input className="inputTime" type="time" placeholder="Start"
-                                onChange={handleStart}/>
+                        <div className="inputTime">
+                            <input required className="inputTime" type="time" onChange={handleStart}/>
                         </div>
-                        <div className="to">
-                            <input className="inputTime" type="time" placeholder="Finish"
-                                onChange={handleFinish}/>
+                        <div className="inputTime">
+                            <input required className="inputTime" type="time" onChange={handleFinish}/>
                         </div>
                         <div className="dateinput">
-                            <input className="inputTime" type="date" placeholder="todays date" max={new Date().toISOString().split("T")[0]}
+                            <input required className="inputTime" type="date" placeholder="todays date" max={new Date().toISOString().split("T")[0]}
                                 onChange={convertDate}/>
                         </div>
                         <span className="totalhrs" style={{backgroundColor:"#242424",color:"#fff",padding:"15px"}}>
@@ -196,8 +209,9 @@ export default function Timetracker() {
                             <input className="description inputTime" type="text" placeholder="you may add a description"
                                 onChange={(e)=>setReportDescription(e.target.value)}/>
                             </div>
-                        <button className="add-butt add-repo" onClick={update}> Add </button>
+                        <button type="submit" className="add-butt add-repo"> Add </button>
                     </div>
+                    </form>
                 </div>
                 {reports.map((value,index)=>{return <RowReport key={"report"+index} report={value}/>})}
                 <div style={{margin:"50px"}}> </div>

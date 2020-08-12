@@ -64,7 +64,8 @@ export default function Login(){
     // checks if email and password are found.
     // if false, displays span#"wrong-email" & span#"wrong-password"
     // if true, dispatches isLogged
-    const validLogIn=()=>{
+    const validLogIn=(e)=>{
+        e.preventDefault()
         if(AdminInfo[0].email===email){
             if(AdminInfo[0].password===password){
                 localStorage.setItem('UserName', 'admin')
@@ -127,22 +128,24 @@ export default function Login(){
         <div className="login-page main">
             <div className="">
                 <h1>Log In</h1>
+                <form onSubmit={validLogIn}>
                 <div>
-                <div>
-                    <input className="inputArea" type="text" name="email" placeholder="Enter email" onChange={(e)=>{checkValidEmail(e)}}/><br/>
+                    <span>*</span>
+                    <input className="inputArea" type="text" name="email" placeholder="Enter email" onChange={(e)=>{checkValidEmail(e)}} required/><br/>
                     <span className={wrongEmailSpan? "" : "hidden-flag"} id="wrong-email">email is not correct</span><br/>
                     <span className={isEmailValid? "" : "hidden-flag"} id="valid-email" >email is not valid</span><br/>
                 </div>
                 <div>
-                    <input className="inputArea" type="password" placeholder="Enter password" onChange={(e)=>{checkValidPassword(e)}}/><br/>
+                    <span>*</span>
+                    <input className="inputArea" type="password" placeholder="Enter password" onChange={(e)=>{checkValidPassword(e)}} required/><br/>
                     <span className={wrongPasswordSpan? "" : "hidden-flag"} id="wrong-password">password is not correct</span><br/>
                     <span className={isPasswordValid? "" : "hidden-flag"} id="valid-password">password is not valid</span><br/>
                 </div>
                 <div>
-                    <button className="submit" onClick={validLogIn}>Submit</button><br/>
+                    <button className="submit" type="submit">Submit</button><br/>
                     <div className="signup-new">new here? <Link to="/signup" className="signup-redirection">sign up</Link></div>
                 </div>
-                </div>
+                </form>
             </div>
         </div>
     )

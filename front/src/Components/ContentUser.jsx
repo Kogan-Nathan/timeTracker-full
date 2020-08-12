@@ -156,7 +156,7 @@ export default function UserArea(props) {
     //----------------------------------------------------------
     // sending the id of the project when checkbox is marked
     const sendInfo=()=>{
-        props.update(props.user.id)
+        props.update(props.user.id,props.user.name)
         props.dataRender()
         // render page to update visual information "on-time"
     }
@@ -169,7 +169,7 @@ export default function UserArea(props) {
                 {isOpen? <div className="border-simple grid-userInfo">
                     <GoTriangleUp className="color-zan cursor" onClick={toggle}/>
                         <input className="username inputTime" type="text" placeholder={props.user.name} onChange={(e)=>{setUsersName(e.target.value)}}/>
-                        <input className="usermail inputTime" type="text" placeholder={props.user.email} onChange={(e)=>{checkValidEmail(e)}}/>
+                        <input disabled className="usermail inputTimeDis" type="text" placeholder={props.user.email} onChange={(e)=>{checkValidEmail(e)}}/>
                         <div className="pass"><p>Password: </p><input className="inputTime" type="text" placeholder="********" onChange={(e)=>{checkValidPassword(e)}}/></div>
                         <div className="phone"><p>Phone: </p><input className="inputTime" type="text" placeholder={props.user.phone} onChange={(e)=>{checkValidPhone(e)}}/></div>
                     <div className="grid-userInfoLast">
