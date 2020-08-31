@@ -46,6 +46,34 @@ router.get('/reports', verify, async (req, res, next)=>{
         res.status(500).json({message: "Internal Server Error", status: 500})
     }
 });
+
+router.get('/reportsByUser', async (req, res, next)=>{
+    const user = parseInt(req.header('user-id'))
+    try{
+        let results = await db.reports();
+        let filtered = results.filter(report=> report.UserId===user)
+        res.json(filtered)
+
+    }
+    catch(e){
+        console.log(e);
+        res.status(500).json({message: "Internal Server Error", status: 500})
+    }
+});
+
+router.get('/reportsByProject', async (req, res, next)=>{
+    const project = parseInt(req.header('project-id'))
+    try{
+        let results = await db.reports();
+        let filtered = results.filter(report=> report.ProjectId===project)
+        res.json(filtered)
+
+    }
+    catch(e){
+        console.log(e);
+        res.status(500).json({message: "Internal Server Error", status: 500})
+    }
+});
  
 router.get('/projects', async (req, res, next)=>{
     try{
