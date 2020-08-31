@@ -12,8 +12,8 @@ export default function UserArea(props) {
     const [UsersPassword, setUsersPassword] = useState("")
     const [isPasswordValid, setIsPasswordValid] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
+    
     const users = props.usersDB
-
     //----------------------------------------------------------
     //checkValidEmail & checkValidPassword both check for a specific pattern
     const checkValidEmail=(e)=>{
@@ -161,6 +161,7 @@ export default function UserArea(props) {
         // render page to update visual information "on-time"
     }
     //----------------------------------------------------------
+    
     return (
         <div className="area"> 
             <div className="grid-checkAndInfo">
@@ -174,7 +175,7 @@ export default function UserArea(props) {
                         <div className="phone"><p>Phone: </p><input className="inputTime" type="text" placeholder={props.user.phone} onChange={(e)=>{checkValidPhone(e)}}/></div>
                     <div className="grid-userInfoLast">
                         <span className="id">Worker ID:  {props.user.id}</span>
-                        <span className="status">Worker status: {convertStatusTime()} hrs</span>
+                        <span className="status">Status: {convertStatusTime()} hrs</span>
                         <button className="addButt addAdmin-butt" onClick={checkUpdates}>Update Info</button>
                     </div>
                 </div> : 

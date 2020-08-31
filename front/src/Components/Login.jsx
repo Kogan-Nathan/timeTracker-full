@@ -125,7 +125,7 @@ export default function Login(){
 
     //----------------------------------------------------------
     return(
-        <div className="login-page main">
+        <div className="login-page loginSignup">
             <div className="">
                 <h1>Log In</h1>
                 <form onSubmit={validLogIn}>

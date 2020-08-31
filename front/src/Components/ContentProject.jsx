@@ -158,8 +158,9 @@ export default function UserArea(props) {
     //----------------------------------------------------------
     // sending the id of the project when checkbox is marked
     const sendInfo=()=>{
-        props.update(props.project.projectID)
+        props.update(props.project.projectID, props.project.projectName)
     }
+    //----------------------------------------------------------
 
     return (
         <div className="area">
@@ -185,10 +186,11 @@ export default function UserArea(props) {
                         <input type="text" className="inputTime" placeholder={props.project.projectManager}
                         onChange={(e)=>{setProjectManager(e.target.value)}}/>
                     </div>
-                    <div className="date">Start Date: {moment(props.project.projectDate).format("YYYY-MM-DD")}</div>
+                    <div className="date">Start Date: {moment(props.project.projectDate).format("DD-MM-YY")}</div>
                     <div className="grid-projectAddAdminInfoLast">
                         <p className="workers">Total Workers: {totalWorkersCalc()}</p>
-                        <p className="status">Status: {convertStatus(props.project.projectStatus)}h</p>
+                        <p className="status">Status: {convertStatus(props.project.projectStatus)}h
+                        </p>
                         <button className="addButton addAdmin-butt add-butt"
                             onClick={checkUpdates}>Update Info
                         </button>        

@@ -1,11 +1,16 @@
 import React,{useState, useEffect} from 'react'
 import {Link} from 'react-router-dom'
+import ReportsTableByProject from './ReportsTableByProject'
+import ReportsTableByUser from './ReportsTableByUser'
+import ReportByProject from './ReportsByProject'
+import ReportByUser from './ReportsByUser'
 import ContentProject from './ContentProject'
 import ContentUser from './ContentUser'
+import AddProjectComp from './AddProjectComp'
+import SearchComp from './SearchBar'
 import Popup from './Popup'
-import { GoTriangleRight } from 'react-icons/go';
-import { FaDollarSign } from 'react-icons/fa';
 import moment from 'moment' 
+
 
 export default function AdminPage(props) {
     const [projects, setProjects] = useState([])
@@ -16,13 +21,14 @@ export default function AdminPage(props) {
     const [UserNamesToBeDeleted, setUserNamesToBeDeleted] = useState([])
     const [SearchArray, setSearchArray] = useState([])
     const [SearchBar, setSearchBar] = useState("")
-    const [ProjectManager, setProjectManager] = useState()
-    const [ProjectClient, setProjectClient] = useState()
-    const [ProjectName, setProjectsName] = useState()
-    const [ProjectCost, setProjectCost] = useState(false)
     const [dbRender, setDbRender] = useState(false)
+    const [displayDropdown, setDisplayDropdown] = useState(false)
     const [showPopup, setShowPopup] = useState(false)
     const [isEmpty, setIsEmpty] = useState(true)
+    const [showUserPopup, setShowUserPopup] = useState(false)
+    const [selectedUser, setSelectedUser] = useState(NaN)
+    const [showProjectPopup, setShowProjectPopup] = useState(false)
+    const [selectedProject, setSelectedProject] = useState(NaN)
 
     useEffect(()=>{
         fetch('http://localhost:9000/projects')
@@ -48,12 +54,40 @@ export default function AdminPage(props) {
         }
     },[UsersToBeDeleted, ProjectsToBeDeleted])
     //---------------------------------------------------------- 
+    const updateSearchBar=(value)=>{
+        setSearchBar(value)
+    }
+    //---------------------------------------------------------- 
+    const updateSearchArray=(value)=>{
+        setSearchArray(value)
+    }
+    //---------------------------------------------------------- 
     const togglePopup=()=>{
         setShowPopup(!showPopup)
     }
     //---------------------------------------------------------- 
+    const toggleUserPopup=()=>{
+        setSelectedUser(NaN)
+        setShowUserPopup(false)
+    }
+    //---------------------------------------------------------- 
+    const toggleProjectPopup=()=>{
+        setSelectedProject(NaN)
+        setShowProjectPopup(false)
+    }
+    //----------------------------------------------------------
+    const openUserReport=(user)=>{
+        setSelectedUser(user)
+        setShowUserPopup(true)
+}
+    //----------------------------------------------------------
+    const openProjectReport=(project)=>{
+        setSelectedProject(project)
+        setShowProjectPopup(true)
+    }
+    //---------------------------------------------------------- 
     // add new project    
-    function postProject(){
+    function postProject(ProjectName, ProjectClient, ProjectManager, ProjectCost){
         let singleProject = {
             name:ProjectName,
             client:ProjectClient,
@@ -95,7 +129,6 @@ export default function AdminPage(props) {
                 setUsersToBeDeleted(UsersToBeDeleted.concat(UsersID))
                 setUserNamesToBeDeleted(UserNamesToBeDeleted.concat(userName))
             }
-            // let tempProjects =  state.filter(value => !action.projectsToBeDeletedData.includes(value.projectName))
         }
     }
     //---------------------------------------------------------- 
@@ -118,39 +151,6 @@ export default function AdminPage(props) {
                 setProjectNamesToBeDeleted(ProjectNamesToBeDeleted.concat(ProjectName))
             }
         }
-    }
-//----------------------------------------------------------
-    const searchInput=(e)=>{
-        //onKeyUp search updates a temporary array that is displayed through map 
-        if(props.displayPage==="Users"){
-            let tempArray = users.filter(value => {
-            let lowerCaseName = value.name.toLowerCase();
-                for (let index = 0; index < lowerCaseName.length; index++) {
-                    if(lowerCaseName.indexOf(e.target.value)===0){
-                        return true
-                    }
-                    else{
-                        return false
-                    }
-                }
-            })
-            setSearchArray(tempArray)
-        }
-        if(props.displayPage==="Projects"){
-            let tempArray = projects.filter(value => {
-            let lowerCaseName = value.projectName.toLowerCase();
-                for (let index = 0; index < lowerCaseName.length; index++) {
-                    if(lowerCaseName.indexOf(e.target.value)===0){
-                        return true
-                    }
-                    else{
-                        return false
-                    }
-                }
-            })
-            setSearchArray(tempArray)
-        }
-        setSearchBar(e.target.value)
     }
     //----------------------------------------------------------
     // send the info to be delete from database 
@@ -185,38 +185,6 @@ export default function AdminPage(props) {
         renderPage()
     }
     //----------------------------------------------------------
-    // check if the project contains all the right info
-    const checkUpdates=()=>{
-        if(projects.length===0){
-            if(ProjectName!==undefined){
-                if(ProjectClient!==undefined){
-                    if(ProjectManager!==undefined){
-                        postProject()
-                    }
-                    else{alert("Sorry, Project must contain Project Manager")}
-                }
-                else{alert("Sorry, Project must contain Client")}
-            }
-            else{alert("Sorry, Project must contain Name")}
-        }
-        else{
-            let projectIndex = projects.findIndex(value=> value.projectName === ProjectName)
-            if(projectIndex===-1){
-                if(ProjectName===undefined){
-                    alert("Sorry, Project must contain Name")
-                }
-                else{
-                    if(ProjectClient!==undefined){
-                        if(ProjectManager!==undefined){postProject()}
-                        else{alert("Sorry, Project must contain Project Manager")}
-                    }
-                    else{alert("Sorry, Project must contain Client")}
-                }
-            }
-            else{alert("Sorry, this project name is alread in use")}
-        }
-    }
-    //----------------------------------------------------------
     const renderPage=()=>{
         setDbRender(!dbRender)
     }
@@ -231,10 +199,14 @@ export default function AdminPage(props) {
                     else if (lowerCaseA > lowerCaseB) return 1;
                     return 0;
                 })
-                return((sortedSearchArray.map(value=>{
-                    return <ContentUser key={value.id} dataRender={renderPage} user={value}
-                    update={UpdateUsersToBeDeleted}  usersDB={users}/>
-                })))   
+                return(
+                    <div className="scroll">
+                    {sortedSearchArray.map(value=>{
+                    return <div className="spaceForTable">
+                        <ContentUser key={value.id} dataRender={renderPage} user={value}
+                        update={UpdateUsersToBeDeleted}  usersDB={users}/>
+                        </div>
+                })}</div>)  
             } //if the search isnt empty it is showing the search result
             // and if it is empty it is showing the original users DB
             else{
@@ -245,10 +217,14 @@ export default function AdminPage(props) {
                     else if (lowerCaseA > lowerCaseB) return 1;
                     return 0;
                 })
-                return((sortedUsersArray.map(value=>{
-                    return <ContentUser key={value.id} dataRender={renderPage} user={value}
-                    update={UpdateUsersToBeDeleted} usersDB={users}/>
-                })))                
+                return(
+                    <div className="scroll">
+                    {sortedUsersArray.map(value=>{
+                    return <div className="spaceForTable">
+                        <ContentUser key={value.id} dataRender={renderPage} user={value}
+                        update={UpdateUsersToBeDeleted} usersDB={users}/>
+                        </div>
+                })}</div>)                
             }
         }
         else if(props.displayPage==="Projects"){
@@ -262,37 +238,15 @@ export default function AdminPage(props) {
                     return 0;
                 })
                 return(
-                    <div className="area">
-                        <div className="grid-projectAddInfo">
-                            <div className="arrowbefore">
-                                <GoTriangleRight className="color-zan"/>
-                            </div>
-                            <div className="arrow-projectname">
-                                <input className="inputTime" type="text" placeholder="Project Name"
-                                onChange={(e)=>{setProjectsName(e.target.value)}}/>
-                            </div>
-                            <div className="arrow-clientname">
-                            <FaDollarSign className={ProjectCost? "color-zan cursor" : "cursor color"}
-                            onClick={()=>{setProjectCost(!ProjectCost)}}/>
-                            </div>
-                            <div className="clientinput">
-                                <p>Client:  </p>
-                                <input className="inputTime clientinput" type="text" placeholder="Clients Name"
-                                onChange={(e)=>{setProjectClient(e.target.value)}}/>
-                            </div>
-                                <div className="arrow-projectman">
-                                <p>PM:  </p>
-                                <input className="inputTime arrow-projectman" type="text" placeholder="Project Manager"
-                                onChange={(e)=>{setProjectManager(e.target.value)}}/>
-                            </div>
-                            <div className="addnew">
-                                <button className="add-butt addnew" onClick={checkUpdates}>Add Project</button>
-                            </div>
+                    <div className="spaceForTable">
+                        <div className="area">
+                            <AddProjectComp projects={projects} sendNewProject={postProject}/>
+                            <div className="scroll">
+                            {sortedSearchArray.map(value=>{
+                                return <ContentProject key={value.projectID} dataRender={renderPage} project={value}
+                                update={UpdateProjectsToBeDeleted} projectsDB={projects}/>
+                            })}</div>
                         </div>
-                        {sortedSearchArray.map(value=>{
-                            return <ContentProject key={value.projectID} dataRender={renderPage} project={value}
-                            update={UpdateProjectsToBeDeleted} projectsDB={projects}/>
-                            })}
                     </div>
                 )
             } 
@@ -306,61 +260,151 @@ export default function AdminPage(props) {
                     return 0;
                 })
                 return(
-                    <div className="area">
-                        <div className="grid-projectAddInfo">
-                            <div className="arrowbefore">
-                                <GoTriangleRight className="color-zan"/>
-                            </div>
-                            <div className="arrow-projectname">
-                                <input className="inputTime" type="text" placeholder="Project Name"
-                                onChange={(e)=>{setProjectsName(e.target.value)}}/>
-                            </div>
-                            <div className="arrow-clientname">
-                            <FaDollarSign className={ProjectCost? "color-zan cursor" : "cursor color"}
-                            onClick={()=>{setProjectCost(!ProjectCost)}}/>
-                            </div>
-                            <div className="clientinput">
-                                <p>Client:  </p>
-                                <input className="inputTime clientinput" type="text" placeholder="Clients Name"
-                                onChange={(e)=>{setProjectClient(e.target.value)}}/>
-                            </div>
-                                <div className="arrow-projectman">
-                                <p>PM:  </p>
-                                <input className="inputTime arrow-projectman" type="text" placeholder="Project Manager"
-                                onChange={(e)=>{setProjectManager(e.target.value)}}/>
-                            </div>
-                            <div className="addnew">
-                                <button className="add-butt addnew" onClick={checkUpdates}>Add Project</button>
-                            </div>
+                    <div className="spaceForTable">
+                        <div className="area">
+                            <AddProjectComp projects={projects} sendNewProject={postProject}/>
+                            <div className="scroll">
+                            {sortedProjectsArray.map(value=>{
+                                return <ContentProject key={value.projectID} dataRender={renderPage} project={value}
+                                update={UpdateProjectsToBeDeleted} projectsDB={projects}/>
+                            })}</div>
                         </div>
-                        {sortedProjectsArray.map(value=>{
-                            return <ContentProject key={value.projectID} dataRender={renderPage} project={value}
-                            update={UpdateProjectsToBeDeleted} projectsDB={projects}/>
-                            })}
+                    </div>
+                )                
+            }
+        }
+        else if(props.displayPage==="Reports By User"){
+            //if the search isnt empty it is showing the search result
+            if(SearchBar!==""){
+                let sortedSearchArray = SearchArray.sort((a,b)=> {
+                    let lowerCaseA = a.name.toLowerCase()
+                    let lowerCaseB = b.name.toLowerCase()
+                    if (lowerCaseA < lowerCaseB) return -1;
+                    else if (lowerCaseA > lowerCaseB) return 1;
+                    return 0;
+                })
+                return(
+                    <div className="reportList">
+                        <h4 className="hReports"> Select a user </h4>
+                        {sortedSearchArray.map((user, index)=>{
+                            return <ReportByUser key={"user"+index} user={user}
+                                userDisplay={selectedUser} closeReports={toggleUserPopup} userReport={openUserReport}/>
+                        })}
+                    </div>
+                )
+            } 
+            // if the search input is empty it is showing the original users DB
+            else{
+                let sortedUsersArray = users.sort((a,b)=> {
+                    let lowerCaseA = a.name.toLowerCase()
+                    let lowerCaseB = b.name.toLowerCase()
+                    if (lowerCaseA < lowerCaseB) return -1;
+                    else if (lowerCaseA > lowerCaseB) return 1;
+                    return 0;
+                })
+                return(
+                    <div className="reportList">
+                        <h4 className="hReports"> Select a user </h4>
+                        {sortedUsersArray.map((user, index)=>{
+                            return <ReportByUser key={"user"+index} user={user}
+                                userDisplay={selectedUser} closeReports={toggleUserPopup} userReport={openUserReport}/>
+                        })}
+                    </div>
+                )                
+            }
+        }
+        else if(props.displayPage==="Reports By Project"){
+            //if the search isnt empty it is showing the search result
+            if(SearchBar!==""){
+                let sortedSearchArray = SearchArray.sort((a,b)=> {
+                    let lowerCaseA = a.projectName.toLowerCase()
+                    let lowerCaseB = b.projectName.toLowerCase()
+                    if (lowerCaseA < lowerCaseB) return -1;
+                    else if (lowerCaseA > lowerCaseB) return 1;
+                    return 0;
+                })
+                return(
+                    <div className="reportList">
+                        <h4 className="hReports"> Select a project </h4>
+                        {sortedSearchArray.map((project, index)=>{
+                            return <ReportByProject key={"project"+index} project={project}
+                                projectDisplay={selectedProject} closeReports={toggleProjectPopup} projectReport={openProjectReport}/>
+                        })}
+                    </div>
+                )
+            } 
+            // if the search input is empty it is showing the original users DB
+            else{
+                let sortedProjectsArray = projects.sort((a,b)=> {
+                    let lowerCaseA = a.projectName.toLowerCase()
+                    let lowerCaseB = b.projectName.toLowerCase()
+                    if (lowerCaseA < lowerCaseB) return -1;
+                    else if (lowerCaseA > lowerCaseB) return 1;
+                    return 0;
+                })
+                return(
+                    <div className="reportList">
+                        <h4 className="hReports"> Select a project </h4>
+                        {sortedProjectsArray.map((project, index)=>{
+                            return <ReportByProject key={"project"+index} project={project}
+                                projectDisplay={selectedProject} closeReports={toggleProjectPopup} projectReport={openProjectReport}/>
+                        })}
                     </div>
                 )                
             }
         }
     }
     //----------------------------------------------------------
+    const openBillboard=()=>{
+
+    }
+
+    const getHeaderReports=()=>{
+        if(props.displayPage==="Reports By User"){
+            return <h3 className="h-spesific"> Reports By User </h3> 
+        }
+        else if(props.displayPage==="Reports By Project"){
+            return <h3 className="h-spesific"> Reports By Project </h3> 
+        }
+        else if(props.displayPage==="Users"){
+            return <h3 className="h-spesific"> Users </h3> 
+        }
+        else if(props.displayPage==="Projects"){
+            return <h3 className="h-spesific"> Projects </h3> 
+        }
+    }
+
     return (
         <div className="main">
-            <div className="adminNav-grid">
-                <div className="a"></div>         
-                <div className={props.class? "active a" : "a"}><p><Link className="link" to="/admin/users">Users</Link></p></div>
-                <div className={props.class? "a" : "active a"}><p><Link className="link" to="/admin/projects">Projects</Link></p></div>
-                <div className="a"></div>      
+            <div className="nav-bar_container">
+                <ul className="navbar">      
+                    <Link className="nav-links" to="/admin/users">Users</Link>
+                    <Link className="nav-links" to="/admin/projects">Projects</Link>
+                    <div onClick={()=>{setDisplayDropdown(!displayDropdown)}}>
+                        <button className="nav-links">Reports</button>
+                        {displayDropdown? <div><Link style={{marginTop:"-10px"}} className="sub-nav-link" to="/admin/reports-by-user">By User</Link>
+                        <Link className="sub-nav-link" to="/admin/reports-by-project">By Project</Link>
+                        </div> : ""}
+                    </div>
+                    <button className="billboardButt" value="Billboard" onClick={openBillboard}>
+                        billboard
+                    </button>
+                </ul>
             </div>
-            <div> 
-                <div className="grid-search">
-                <div className="a"></div> 
-                    <input type="text" className="search-bar search" onKeyUp={(e)=>{searchInput(e)}} placeholder="Search.."/>
-                    <button className="button addAdmin-butt add" onClick={togglePopup} disabled={isEmpty}>Delete</button>
-                <div className="a"></div> 
-                </div>
-            </div>
-            <div className="spaceForTable">
-                {Display()}
+            <div className="container">
+                {getHeaderReports()}
+                <SearchComp displayPage={props.displayPage} Projects={projects} Users={users} SearchValue={updateSearchBar} SearchArray={updateSearchArray}
+                    DeletePopup={togglePopup} Empty={isEmpty}/>
+                {props.isReport?
+                    <div style={{display:"flex"}}>
+                        {Display()}
+                        {showProjectPopup ? <ReportsTableByProject closeReports={toggleProjectPopup} project={selectedProject}/> : null}
+                        {showUserPopup ? <ReportsTableByUser user={selectedUser}/> : null}
+                    </div>
+                    : <div>
+                        {Display()}
+                    </div>
+                }
             </div>
             {showPopup ? <Popup closePopup={togglePopup} delete={sendDeleteInfo} usersArray={UserNamesToBeDeleted} projectsArray={ProjectNamesToBeDeleted}/> : null}
         </div> 

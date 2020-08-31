@@ -34,6 +34,7 @@ export default function ThisMonth() {
             let endOfMonth   = moment().endOf('month')
             // the reports for the current month --- >
             let tempfilter = reportByUser.filter(report => moment(report.Date).isBetween(startOfMonth, endOfMonth, undefined, []))
+            tempfilter = tempfilter.sort((a,b) => new Date(b.Date) - new Date(a.Date))
             setReportForMonth(tempfilter)                  
             totalHoursCalc(tempfilter)
         }
@@ -47,15 +48,17 @@ export default function ThisMonth() {
         let totalTime = moment.duration(convertHours, 'hours');
         let hours = Math.floor(totalTime.asHours());
         let mins  = Math.floor(totalTime.asMinutes()) - hours * 60;
+        hours = ((hours > 9) ? hours : ("0"+hours))
+        mins = ((mins > 9) ? mins : ("0"+mins))
         let result = hours + ":" + mins;
         setTotalHours(result)
     }
     //----------------------------------------------------------
     return (
-        <div className="main">
+        <div className="container">
             <h3 className="h-spesific"> This Month </h3>
             <div className="tableConatainer tableProjects">
-                <Table className="tableProjectsHeading">
+                <Table className="tableProjectsHeadingUser">
                     <thead>
                         <tr className="trHeading">
                             <th> Project Name </th>
@@ -66,10 +69,11 @@ export default function ThisMonth() {
                     </thead>
                 </Table>
             </div>
-            {reportForMonth.map((value,index)=>{return <RowSummary key={"report"+index} report={value}/>})}        
-            <div>
-                <button className="total-butt" style={{marginTop:"20px"}}> Total: {totalHours} </button>
-            </div>
+            <div className="scroll">
+            {reportForMonth.map((value,index)=>{return <RowSummary key={"report"+index} report={value}/>})}       
+            </div> 
+            <hr className="hrBorder"/>
+            <div className="totalDiv"> <span style={{fontWeight:"600"}}> Total hrs: </span> {totalHours} </div>
         </div>
     )
 }

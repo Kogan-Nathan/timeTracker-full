@@ -21,9 +21,9 @@ export default function Users() {
     },[]);
     //----------------------------------------------------------
     return (
-        <div>
+        <div className="container">
             <div className="tableConatainer tableProjects">
-            <Table className="tableProjectsHeading">
+            <Table className="tableProjectsHeadingUser">
                 <thead className="trHeading">
                     <tr>
                         <th> Name </th>
@@ -33,7 +33,9 @@ export default function Users() {
                 </thead> 
             </Table>
             </div>
+            <div className="scroll">
             {usersData.map((value,index)=>{return <RowUsers key={"user"+index} user={value}/>})}
+            </div>
         </div>
     )
 }

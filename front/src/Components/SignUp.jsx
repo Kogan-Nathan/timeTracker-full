@@ -169,7 +169,7 @@ export default function SignUp(props){
     }
     //----------------------------------------------------------
     return(
-        <div className="main">
+        <div className="loginSignup">
             <h1>Sign up</h1>
             {isLoading? <LoadingSpinner/> : <form onSubmit={signed}>
                 <div>

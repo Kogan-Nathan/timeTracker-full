@@ -5,7 +5,7 @@ export default function PageNotFound(){
     const history = useHistory();
  
     return(
-        <div className="main">
+        <div className="container">
                 <div className="notfound"> 
                     <h2>404 - Page not found</h2>
                     <p>The page you are looking for might have been removed,</p>

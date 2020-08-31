@@ -1,5 +1,5 @@
 import React ,{useState, useEffect} from 'react';
-import { HashRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import Login from './Components/Login'
 import SignUp from './Components/SignUp'
@@ -7,8 +7,8 @@ import Header from './Components/Header'
 import Footer from './Components/Footer';
 import Admin from './Components/AdminPage';
 import Homepage from './Components/HomePage';
-import UserPage from './Components/UserPage'
-import pageNotFound from './Components/pageNotFound'
+import UserPage from './Components/UserPage';
+import pageNotFound from './Components/pageNotFound';
 import './App.css';
 
 function App() {
@@ -93,11 +93,15 @@ function App() {
           <Route exact path="/" component={()=>{return <Homepage/>}}/>
           <Route exact path="/signup" component={()=>{return <SignUp reRender={renderPage}/>}}/>
           <Route exact path="/login" component={()=>{return <Login/>}}/>
-          <AdminRoute exact path="/admin" component={()=>{return <Admin displayPage={"Users"} class={true} />
+          <AdminRoute exact path="/admin" component={()=>{return <Admin displayPage={"Users"}/>
           }}/> 
-          <AdminRoute exact path="/admin/users" component={()=>{return <Admin displayPage={"Users"} class={true}/>
+          <AdminRoute exact path="/admin/users" component={()=>{return <Admin isReport={false} displayPage={"Users"}/>
           }}/>
-          <AdminRoute exact path="/admin/projects" component={()=>{return <Admin displayPage={"Projects"} class={false}/>
+          <AdminRoute exact path="/admin/projects" component={()=>{return <Admin isReport={false} displayPage={"Projects"}/>
+          }}/>
+          <AdminRoute exact path="/admin/reports-by-project" component={()=>{return <Admin isReport={true} displayPage={"Reports By Project"}/>
+          }}/>
+          <AdminRoute exact path="/admin/reports-by-user" component={()=>{return <Admin isReport={true} displayPage={"Reports By User"}/>
           }}/>
           {users.map((user,index)=>{
             return <PrivateRoute exact path={"/timetracker/user="+user.id} key={"user"+index} component={()=>{return <UserPage userid={UserId} displayPage={"Timetracker"}/>}}/>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import { useHistory } from "react-router-dom";
 import Timetracker from './Timetracker'
 import Last7days from './Last7days'
@@ -9,8 +9,10 @@ import SpesificTime from './SpesificTime'
 
 export default function UserPage(props) {
 
+    const [displayDropdown, setDisplayDropdown] = useState(false)
     const UserIndex= props.userid
     const history = useHistory();
+
     //----------------------------------------------------------
     // changes visual information
     const Display=()=>{
@@ -56,32 +58,34 @@ export default function UserPage(props) {
         }
     }
     //----------------------------------------------------------
+    const openBillboard=()=>{
+
+    }
+    //----------------------------------------------------------
     return (
         <div className="main">
             <div className="nav-bar_container">
-                <ul className="navbar">       
+                <ul className="navbar">
+                    <div>      
                     <button className="nav-links" value="TimeTracker" onClick={(e)=>changeLocation(e)}>
                         TimeTracker
                     </button>
-                    <select className="select-box" onChange={(e)=>changeLocation(e)}>
-                        <option className="select-items" style={{display:"none"}}>
-                            Summary
-                        </option>
-                        <option className="select-items" value="last 7 days">
-                            Last 7 days
-                        </option>
-                        <option className="select-items" value="this month">
-                            This month
-                        </option>
-                        <option className="select-items" value="spesific time">
-                            Spesific time
-                        </option>
-                    </select>
+                    <div onClick={()=>{setDisplayDropdown(!displayDropdown)}}>
+                        <button className="nav-links">Summary</button>
+                        {displayDropdown? <div><button style={{marginTop:"-10px"}} className="sub-nav-link" value="last 7 days" onClick={(e)=>changeLocation(e)}>Last 7 days</button>
+                        <button className="sub-nav-link" value="this month" onClick={(e)=>changeLocation(e)}>This month</button>
+                        <button className="sub-nav-link" value="spesific time" onClick={(e)=>changeLocation(e)}>Spesific time</button>
+                        </div> : ""}
+                    </div>
                     <button className="nav-links" value="Projects" onClick={(e)=>changeLocation(e)}>
                         Projects
                     </button>
                     <button className="nav-links" value="Users" onClick={(e)=>changeLocation(e)}>
                         Users
+                    </button>
+                    </div> 
+                    <button className="billboardButt" value="Billboard" onClick={openBillboard}>
+                        billboard
                     </button>
                 </ul>
             </div>

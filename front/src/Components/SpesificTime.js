@@ -35,6 +35,7 @@ export default function SpesificTime() {
                 if (reportArray.length > 0){
                 // the reports for the spesific time choosen --- >
                 let tempfilter = reportArray.filter(report => moment(report.Date).isBetween(fromDate, toDate, undefined, []))
+                tempfilter = tempfilter.sort((a,b) => new Date(b.Date) - new Date(a.Date))
                 setReportForSpesific(tempfilter)    
                 totalHoursCalc(tempfilter)
                 }
@@ -44,6 +45,7 @@ export default function SpesificTime() {
                 if (reportArray.length > 0){
                 // the reports for the spesific time choosen --- >
                 let tempfilter = reportArray.filter(report => moment(report.Date).isBetween(toDate, fromDate, undefined, []))
+                tempfilter = tempfilter.sort((a,b) => new Date(b.Date) - new Date(a.Date))
                 setReportForSpesific(tempfilter)    
                 totalHoursCalc(tempfilter)
                 }
@@ -60,31 +62,36 @@ export default function SpesificTime() {
         let totalTime = moment.duration(convertHours, 'hours');
         let hours = Math.floor(totalTime.asHours());
         let mins  = Math.floor(totalTime.asMinutes()) - hours * 60;
+        hours = ((hours > 9) ? hours : ("0"+hours))
+        mins = ((mins > 9) ? mins : ("0"+mins))
         let result = hours + ":" + mins;
         setTotalHours(result)
     }
     //----------------------------------------------------------
     return (
-        <div>
+        <div className="container">
             <h3 className="h-spesific"> Choose a Spesific Time </h3>
             <Table className="tableProjects">
                 <thead>
                     <tr>
-                        <td style={{border:"2px #fff solid"}} colSpan="2" className="td-spesific"> From 
-                            <input className="td-spesific cursor" type="date" placeholder="dd/mm/yyyy"
+                        <td style={{border:"2px #fff solid"}}  className="td-spesific"> From 
+                            <input className="input-spesific cursor" type="date" placeholder="dd/mm/yyyy"
                                 max={new Date().toISOString().split("T")[0]} onChange={handleFromDate}>
                             </input>
                         </td>
-                        <td style={{border:"2px #fff solid"}} colSpan="2" className="td-spesific"> To 
-                            <input className="td-spesific cursor" type="date" placeholder="dd/mm/yyyy"
+                        <td style={{border:"2px #fff solid"}}  className="td-spesific"> To 
+                            <input className="input-spesific cursor" type="date" placeholder="dd/mm/yyyy"
                                 max={new Date().toISOString().split("T")[0]} onChange={handleToDate}>
                             </input>
                         </td>
+                        
+                        <button className="add-butt spesificButton" onClick={()=> getReports()}>Total hrs: {totalHours}</button>
+                        
                     </tr> 
                 </thead>
             </Table>
             <div className="tableConatainer tableProjects" style={{marginTop:"10px"}}>
-                <Table className="tableProjectsHeading">
+                <Table className="tableProjectsHeadingUser">
                     <thead >
                         <tr className="trHeading">
                             <th> Project Name </th>
@@ -95,10 +102,10 @@ export default function SpesificTime() {
                     </thead> 
                 </Table>
             </div>
+            <div className="scroll">
             {show && reportForSpesific.map((value,index)=>{return <RowSummary key={"report"+index} report={value}/>})}
-            <div>
-                <button className="login-butt" style={{marginTop:"20px"}} onClick={()=> getReports()}>Total: {totalHours}</button>
             </div>
+            <hr className="hrBorder"/>
         </div>
     )
 }

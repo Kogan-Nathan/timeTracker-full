@@ -4,7 +4,7 @@ import React from 'react'
 export default function LoadingSpinner(){
  
     return(
-        <div className="main">
+        <div className="container">
 
             <svg id="svg-spinner" xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 48 48">
                 <circle cx="24" cy="4" r="4" fill="#8BF6F7"/>

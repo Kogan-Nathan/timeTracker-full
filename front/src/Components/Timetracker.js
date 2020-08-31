@@ -171,51 +171,53 @@ export default function Timetracker() {
         }
         else{
             return(
-                <div>
-                <div className="tableConatainer tableProjects">
-                    <Table className="tableProjectsHeading">
-                        <thead>
-                            <tr className="trHeading">
-                                <th> Project name </th>
-                                <th> Start </th>
-                                <th> Finish </th>
-                                <th> Date </th>
-                                <th> Total  </th>
-                            </tr> 
-                        </thead>
-                    </Table>
-                    <form onSubmit={update}>
-                    <div className="grid-userNewReport" style={{width:"100%", marginBottom:"20px"}}>
-                        <select className="inputTime select1" onChange={(e)=>setProjectName(e.target.value)} required>
-                            <option>Select Project</option>
-                            {Projects.map((value,index)=>{
-                                return <option key={"project"+index}>{value.projectName}</option>
-                            })}
-                        </select>
-                        <div className="inputTime">
-                            <input required className="inputTime" type="time" onChange={handleStart}/>
-                        </div>
-                        <div className="inputTime">
-                            <input required className="inputTime" type="time" onChange={handleFinish}/>
-                        </div>
-                        <div className="dateinput">
-                            <input required className="inputTime" type="date" placeholder="todays date" max={new Date().toISOString().split("T")[0]}
-                                onChange={convertDate}/>
-                        </div>
-                        <span className="totalhrs" style={{backgroundColor:"#242424",color:"#fff",padding:"15px"}}>
-                            total hrs: {projectStatus}
-                        </span>
-                        <div className="select2">
-                            <input className="description inputTime" type="text" placeholder="you may add a description"
-                                onChange={(e)=>setReportDescription(e.target.value)}/>
+                <div className="container">
+                    <div className="tableConatainer tableProjects">
+                        <Table className="tableProjectsHeadingUser">
+                            <thead>
+                                <tr className="trHeading">
+                                    <th> Project name </th>
+                                    <th> Start </th>
+                                    <th> Finish </th>
+                                    <th> Date </th>
+                                    <th> Total  </th>
+                                </tr> 
+                            </thead>
+                        </Table>
+                        <form onSubmit={update}>
+                        <div className="grid-userNewReport" style={{width:"100%", marginBottom:"20px"}}>
+                            <select className="inputTime select1" onChange={(e)=>setProjectName(e.target.value)} required>
+                                <option>Select Project</option>
+                                {Projects.map((value,index)=>{
+                                    return <option key={"project"+index}>{value.projectName}</option>
+                                })}
+                            </select>
+                            <div className="inputTime">
+                                <input required className="inputTime" type="time" onChange={handleStart}/>  
                             </div>
-                        <button type="submit" className="add-butt add-repo"> Add </button>
+                            <div className="inputTime">
+                                <input required className="inputTime" type="time" onChange={handleFinish}/>
+                            </div>
+                            <div className="dateinput">
+                                <input required className="inputTime" type="date" placeholder="todays date" max={new Date().toISOString().split("T")[0]}
+                                    onChange={convertDate}/>
+                            </div>
+                            <span className="totalhrs" style={{backgroundColor:"#242424",color:"#fff",padding:"20px 15px"}}>
+                                Total hrs: {projectStatus}
+                            </span>
+                            <div className="select2">
+                                <input className="description inputTime" type="text" placeholder="you may add a description"
+                                    onChange={(e)=>setReportDescription(e.target.value)}/>
+                                </div>
+                            <button type="submit" className="add-butt add-repo"> Add </button>
+                        </div>
+                        </form>
                     </div>
-                    </form>
+                    <div className="scroll">
+                        {reports.map((value,index)=>{return <RowReport key={"report"+index} report={value}/>})}
+                    </div>
+                    <div style={{margin:"50px"}}> </div>
                 </div>
-                {reports.map((value,index)=>{return <RowReport key={"report"+index} report={value}/>})}
-                <div style={{margin:"50px"}}> </div>
-            </div>
             )
         }
     }

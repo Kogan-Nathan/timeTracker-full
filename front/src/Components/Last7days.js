@@ -31,6 +31,7 @@ export default function Last7days() {
             let startDate = moment().subtract(7, 'days') // gives you the start date 
             let endDate = moment() // todays date as object
             let tempfilter = reportsByUser.filter(report => moment(report.Date).isBetween(startDate, endDate, undefined, []))
+            tempfilter = tempfilter.sort((a,b) => new Date(b.Date) - new Date(a.Date))
             setReportForWeek(tempfilter)
             totalHoursCalc(tempfilter)
         } 
@@ -44,15 +45,17 @@ export default function Last7days() {
         let totalTime = moment.duration(convertHours, 'hours');
         let hours = Math.floor(totalTime.asHours());
         let mins  = Math.floor(totalTime.asMinutes()) - hours * 60;
+        hours = ((hours > 9) ? hours : ("0"+hours))
+        mins = ((mins > 9) ? mins : ("0"+mins))
         let result = hours + ":" + mins;
         setTotalHours(result)
     }
     //----------------------------------------------------------
     return (
-        <div className="main">
+        <div className="container">
                 <h3 className="h-spesific"> Last 7 days </h3>
                 <div className="tableConatainer tableProjects">
-                    <Table className="tableProjectsHeading">
+                    <Table className="tableProjectsHeadingUser">
                         <thead>
                             <tr className="trHeading">
                                 <th> Project Name </th>
@@ -63,8 +66,11 @@ export default function Last7days() {
                         </thead>
                     </Table>
                 </div>
-            {reportForWeek.map((value,index)=>{return <RowSummary key={"report"+index} report={value}/>})}
-            <div> <button className="total-butt" style={{marginTop:"20px"}} > Total: {totalHours} </button> </div>
+                <div className="scroll">
+                {reportForWeek.map((value,index)=>{return <RowSummary key={"report"+index} report={value}/>})}
+                </div>
+                <hr className="hrBorder"/>
+            <div className="totalDiv"> <span style={{fontWeight:"600"}}> Total hrs: </span> {totalHours} </div>
         </div>
     )
 }
