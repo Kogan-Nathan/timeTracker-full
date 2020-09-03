@@ -1,7 +1,12 @@
 @import url("//fonts.googleapis.com/css?family=Montserrat:thin,extra-light,light,100,200,300,400,500,600,700,800");
+body{
+  --headerPadding: 50px;
+  --headerFont: 28px;
+  --footerPadding: 20px;
+}
+
 .App {
   text-align: center;
-  /* font-size: calc(0.45em + 0.55vw); */
 }
 
 body, h1,h2,h3,h4,h5,h6,button,a,td,th,tr,input,Link{
@@ -14,10 +19,12 @@ h1{
   color: #00C9CD;
 }
 
+#totop{
+  display: none;
+}
+
 .main{
-  min-height: 100vh;
-  margin: 80px auto auto auto;
-  text-align: center;
+  display: flex;
 }
 
 a:visited, a:active, a{
@@ -85,7 +92,8 @@ li{
 .login-butt{
   border: solid 2px #00C9CD;
   background-color: transparent;
-  padding: 15px 28px
+  padding: 15px 28px;
+  color: #00C9CD;
 }
 
 .total-butt{
@@ -94,6 +102,19 @@ li{
   padding: 15px 28px
 }
 
+.totalDiv{
+  margin-top: 10px;
+  /* background-color: #00C9CD; */
+  color: #000;
+  font-size: 20px;
+  display: inline-block;
+  padding: 5px 10px;
+}
+
+.hrBorder{
+  margin-top: 35px;
+  width: 90%;
+}
 .signup-butt{
   border: 2px #00C9CD solid;
   padding: 15px 20px
@@ -185,13 +206,14 @@ input:focus, .inputArea:focus, button:focus{
   outline: none;
 }
 
-.inputTime{
+.inputTime, .inputTimeDis{
   border: none;
   font-family: "montserrat";
   padding: 10px 10px;
   font-size: 16px;
   background-color: #C5EEEF;
   color: #242424;
+  width: 90%;
 }
 
 ::placeholder{
@@ -202,6 +224,7 @@ input:focus, .inputArea:focus, button:focus{
 .inputTime:hover{
   background-color: #00C9CD;
 }
+
 
 .description{
   padding: 15px 10px
@@ -379,22 +402,45 @@ input[type=checkbox]:checked:after {
 
 .tableProjects{
   margin: auto;
-  width: 60%;
+  width: 90%;
 }
 
-.tableProjectsHeading{
+.tableProjectsHeadingUser{
   margin-bottom: 20px;
 }
 
 .trHeading{
+  width: 100%;
+  display: inline-block;
   font-weight: 700;
   font-size: 22px;
   background-color: #242424;
   color: white;
 }
 
+.adminHeading{
+  display: inline-block;
+  font-weight: 700;
+  font-size: 18px;
+  background-color: #242424;
+  color: white;
+}
+
+.adminHeading-p{
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.arrowFlex{
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: middle;
+  margin-left: 5px;
+}
+
 table{
   border-collapse: collapse;
+  width: 100%;
 }
 
 td{
@@ -402,14 +448,20 @@ td{
   width: 200px;
   vertical-align: middle;
   padding: 25px 0px;
+  word-break: break-all;
 }
 
 th{
   border: solid 1px #242424;
-  width: 335px;
+  width: 400px;
   vertical-align: middle;
   font-weight: 400;
   padding: 10px 0px;
+}
+
+.noBorder{
+  border: 1px solid #000;
+  border-bottom: none;
 }
 
 .td-spesific{
@@ -419,6 +471,30 @@ th{
   font-size: 16px;
   background-color: #C5EEEF;
   color: #242424;
+  width: calc((100%-205px)/2);
+}
+
+.input-spesific{
+  border: none;
+  font-family: "montserrat";
+  padding: 10px 10px;
+  font-size: 16px;
+  background-color: #C5EEEF;
+  color: #242424;
+  /* width: 500px; */
+}
+
+.totalSpesific{
+  width: 200px;
+  padding: 0px;
+}
+
+.spesificButton{
+  font-size: 16px;
+  background: transparent;
+  padding: 20px 0px;
+  font-weight: 600;
+  width: 200px;
 }
 
 .h-spesific{
@@ -426,21 +502,30 @@ th{
   padding-bottom: 30px;
   font-weight: 600;
 }
+
+.hReports{
+  color: #00C9CD;
+  font-weight: 500;
+}
 /* -------------------------- nav bar ------------------------- */
 
-.nav-bar_container{
-  margin-top: 70px;
-  margin-bottom: 40px;
+.nav-bar_container {
+  flex:5%;
+  box-shadow: 1px 0px 2px #242424;
 }
 
-.navbar {
-  width: 100%;
-  display: inline-block;
-  align-items: center;
-  min-height: 10vh;
-  /* padding: 0 10px; */
-  margin: auto;
-  background-color: transparent;
+.container {
+  flex: 90%;
+  margin: 30px 0px;
+  height: calc(100vh - (220px + 96px));
+  overflow: hidden;
+  overflow-y: hidden;
+}
+
+.loginSignup {
+  margin: 30px 0px;
+  height: calc(100vh - (200px + 97px));
+  /* overflow-y: hidden; */
 }
 
 .navbar-nav {
@@ -451,28 +536,56 @@ th{
 }
 
 .nav-links {
-  display: inline-block;
-  align-items: center;
+  display: block;
+  text-align: left;
   list-style: none;
-  font-size: 25px;
-  text-decoration: none;
+  font-size: 20px;
   color: #5C5C5C;
-  padding: 20px 80px;
+  background-color: transparent;
+  border: none;
+  margin: 30px;
+  margin-left: 40px;
+  padding: 0px;
 }
 
-.nav-links:hover{
+.sub-nav-link{
+  display: block;
+  text-align: left;
+  list-style: none;
+  font-size: 15px;
+  text-decoration: none;
+  color: #5C5C5C;
+  background-color: transparent;
+  border: none;
+  margin: 5% 0px 0px 50px;
+}
+
+.nav-link-dis{
+  display: block;
+  text-align: left;
+  list-style: none;
+  font-size: 20px;
+  color: #5C5C5C;
+  background-color: transparent;
+  border: none;
+  margin: 30px 30px;
+  padding: 0px;
+}
+
+.nav-links:hover, .sub-nav-link:hover{
   text-decoration: none;
   color: #00C9CD;
 }
 
-.nav-link:active{
+.nav-link:active, .sub-nav-link:active{
   background-color: #333333;
   color: #fff;
 }
 
-.nav-itam :focus{
+.nav-itam :focus, .sub-nav-link:focus{
   background-color: #333333;
   color: #fff;
+  outline: none;
 }
 
 .lable{
@@ -483,11 +596,11 @@ th{
   position: relative;
   display: inline-block;
   font-family: "montserrat";
-  font-size: 25px;
+  font-size: 20px;
   color: #5C5C5C;
   border: none;
-  width: 150px;
-  margin: 0px 50px;
+
+  margin: 0px 30px;
 }
 
 .select-box:hover{
@@ -521,7 +634,7 @@ th{
 }
 
 .spaceForTable{
-  margin: 50px 0px;
+  margin: 0px;
 }
 /*--------------- grid ----------------*/
 
@@ -571,7 +684,7 @@ th{
 
 .grid-search{
   display: grid;
-  margin-top: 50px;
+  margin-bottom: 40px;
   grid-gap: 1rem;
   grid-template-columns: 
   1fr 670px 200px 1fr;
@@ -647,7 +760,7 @@ th{
   padding-left: 25px;
 }
 
-.usermail{
+.inputTimeDis{
   grid-area: usermail;
   padding-left: 25px;
 }
@@ -809,6 +922,33 @@ th{
   text-align: left;
 }
 
+.sign_input1{
+  grid-area: sign_input1;
+}
+.sign_input2{
+  grid-area: sign_input2;
+}
+.sign_input3{
+  grid-area: sign_input3;
+}
+.sign_input4{
+  grid-area: sign_input4;
+}
+
+.sign_grid{
+  width: 870px;
+  margin: auto;
+  margin-bottom: 40px;
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 
+  1fr 1fr 200px;
+  grid-template-areas:
+  "sign_input1 sign_input2 addnew"
+  "sign_input3 sign_input4 addnew"
+}
+
+
 .grid-projectAddAdminInfo{
   padding: 15px 15px 0px 15px;
   display: grid;
@@ -948,9 +1088,6 @@ th{
   .add-butt{
     width: 92%;
   }
-  /* .logout-butt{
-    padding: 10px 20px;
-  } */
   .login-butt, .signup-butt, .welcome, .logout-butt{
     margin-left: 5px;
     font-size: 10px;
@@ -971,21 +1108,19 @@ th{
     margin: 25px;
     width: 300px;
   }
-  /* user work space */
 
+  /* user work space */
   .grid-userNewReport{
     grid-gap: 0.4rem;
   }
-  .tableConatainer{
-    width: 650px;
-  }
+
   .trHeading{
     font-size: 18px;
   }
   .grid-userNewReport{
   grid-template-columns: 130px 130px 130px 130px 103px;
   }
-  .inputTime{
+  .inputTimeDis, .inputTime{
     font-size: 12px;
     padding: 10px;
   }
@@ -996,14 +1131,11 @@ th{
     width: 650px;
   }
   td{
-    width: 130px;
+    max-width: 50px;
   }
 }
 
-
-
 /**** mobile ****/
-
 @media only screen and (max-width: 360px){
   .grid-search{
     grid-template-columns: 1fr 50% 80px 1fr;
@@ -1011,7 +1143,7 @@ th{
   }
 
   .spaceForTable{
-    margin: 20px 0px;
+    margin: 0px;
   }
 
   .grid-infoProject, .grid-checkAndInfo{
@@ -1043,7 +1175,6 @@ th{
     margin: 0px 0px 5px 0px;
     padding: 2px 6px 2px 2px;
   }
-
 
   .grid-userInfo, .grid-info-small, .grid-userInfoLast, .grid-projectAddAdminInfo,
   .grid-projectAddInfo, .grid-projectSmallInfo,.grid-projectAddAdminInfoLast,
@@ -1102,7 +1233,6 @@ th{
     font-size: 12px;
     padding: 5px;
   }
-
   
   .area .grid-projectAddInfo{
     width: 80%;
@@ -1204,8 +1334,6 @@ th{
     font-size: 10px;
   }
 
-
-
   /* user work space */
   .nav-bar_container{
     margin: 25px 0px;
@@ -1222,19 +1350,10 @@ th{
   .grid-userNewReport{
   grid-template-columns: 90px 45px 45px 60px 52px;
   }
-  .inputTime{
+  .inputTimeDis, .inputTime{
     font-size: 10px;
     padding: 5px;
   }
-
-  /* input[type="date"]::-webkit-calendar-picker-indicator {
-    display: none;
-    -webkit-appearance: none;
-}
-input[type=time]::-webkit-calendar-picker-indicator{
-  display: none;
-  -webkit-appearance: none;
-} */
 
   .totalhrs{
     font-size: 10px;
@@ -1247,12 +1366,11 @@ input[type=time]::-webkit-calendar-picker-indicator{
     width: 300px;
   }
   .reportTd{
-    width: 48px;
     display: inline-block;
     word-break: break-all;
     height: 30px;
     font-size: 10px;
-    padding: 5px
+    padding: 5px;
   }
   .summaryTd{
     width: 62px;
@@ -1273,24 +1391,188 @@ input[type=time]::-webkit-calendar-picker-indicator{
   }
 
   td{
-    width: 85px;
+    width: 13.2vw;
     display: inline-block;
     word-break: break-all;
     height: 30px;
     font-size: 10px;
-    padding: 5px
+    padding: 5px;
+    border: none !important;
   }
 }
 
-
-
-
-/* @media only screen and (max-width: 600px) {
-  .adminNav-grid{
-    grid-template-columns: 1fr 45% 45% 1fr;
+@media only screen and (max-width: 360px) {
+  .notfound {
+    padding-left: 15px;
+    padding-right: 15px;
+    text-align: center;
+    width: 75%;
   }
-  .addAdmin-butt{
-    padding: 15px 15px;
+  .notfound h2{
+    font-size: 16pt;
   }
-} */
+  .notfound p{
+    font-size: 10pt;
+  }
+}
 
+/* popup */
+.popup{
+  padding: 25px 50px;
+  max-height: 65%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background-color: #fff;
+  box-shadow: 2px 2px 15px #333333;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  
+}
+.fixed{
+  position: fixed;
+}
+
+.scroll{
+  overflow-y: scroll;
+  max-height: 40vh;
+}
+
+.scroll::-webkit-scrollbar{
+  width: 11px;
+}
+
+.scroll::-webkit-scrollbar-track{
+  background: white;
+}
+
+.scroll::-webkit-scrollbar-thumb{
+  background-color: #565a5a;
+  border: 3px solid white;
+  border-radius: 6px;
+}
+
+.scroll::-webkit-scrollbar-thumb:hover{
+  background-color: #abb1b1;
+}
+
+.cancel{
+  border: solid 2px #00C9CD;
+  background-color: #00C9CD;
+  padding: 15px 28px;
+  color: #fff;
+  margin-left: 20px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+
+}
+
+.cancel:hover{
+  border: solid 2px #000;
+  background-color: #000;
+  padding: 15px 28px;
+  color: #fff;
+}
+
+.popup-container{
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: rgba(0,0,0, 0.5);
+  overflow-y: auto;
+}
+
+.i_icon{
+  background-color: #C5EEEF;
+  color: #000;
+  border-radius: 50%;
+  padding: 4px 8px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 	'Courier New';
+}
+
+.tooltip {
+  position: relative;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #00C9CD;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #00C9CD transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tool{
+  color: #000;
+  font-weight: 500;
+  background-color: transparent;
+  border: none;
+}
+
+/**** report list ****/
+.reportList{
+  text-align: left;
+  margin-left: 20px;
+  flex: 20%;
+}
+
+.reportItem{
+  margin-bottom: 20px;
+}
+
+.reportArea{
+  display: flex;
+  flex: 80%;
+  margin-right: 10%;
+  justify-content: center;
+}
+
+/**** billboard ****/
+.billboardButt{
+  padding: 20px 30px;
+  border: 1px solid #00C9CD;
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 130px;
+  margin-left: -65px;
+  background:#d6ffffa4;
+  color: #00C9CD;
+}
+
+.billboardButt:hover{
+  background:#fff;
+}
