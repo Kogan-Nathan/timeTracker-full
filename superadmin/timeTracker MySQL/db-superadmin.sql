@@ -29,7 +29,7 @@ CREATE TABLE `admins` (
   `adminEmail` varchar(45) NOT NULL,
   `company` varchar(45) NOT NULL,
   PRIMARY KEY (`adminID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,7 +38,7 @@ CREATE TABLE `admins` (
 
 LOCK TABLES `admins` WRITE;
 /*!40000 ALTER TABLE `admins` DISABLE KEYS */;
-INSERT INTO `admins` VALUES (1,'Nicky','$2b$10$VZseR6x/JNDHMktEghb7ZuepXgB2wOLM2cEqE7H6C1T/bfDQ82mqG','nickymirz@gmail.com','not have'),(2,'Nicky','$2b$10$d5D/riRcDL9EJFN2wuPrXek0dTileBnCHfFtsxYCC0CYEO7Lm0BGe','timeUser@gmail.com','not have'),(3,'nathan','$2b$10$dXwE0t76Bkguhulp413sGuDo.2KSWtZJnZ3tePWn2ZNh2Mcvjw2E2','time@gmail.com','not have'),(4,'Nicky','$2b$10$GzSkH1uHyFJfZJ.LfkrxnuWnhO2LCO/tlmITglEffjJjdjQzdkV..','employeetest12345@gmail.com','not have 6');
+INSERT INTO `admins` VALUES (1,'nathan','$2b$10$NAA7tT6sRafWbEwhAmAWg.QaTjcntloiv7j0F7DGG.AcGiBfrBvpC','nathan@gmail.com','Nat-Comp'),(2,'Nicky','$2b$10$fJ4EKZeDk/q.FJBagSa8XOAC4aaLNNmvMYsNNIy/XOGYvQjNCrBLC','nicky@gmail.com','Nicky-Comp');
 /*!40000 ALTER TABLE `admins` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -58,6 +58,7 @@ CREATE TABLE `projects` (
   `projectCost` tinyint NOT NULL,
   `projectID` int NOT NULL AUTO_INCREMENT,
   `company` varchar(45) DEFAULT NULL,
+  `adminID` int NOT NULL,
   PRIMARY KEY (`projectID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -68,7 +69,7 @@ CREATE TABLE `projects` (
 
 LOCK TABLES `projects` WRITE;
 /*!40000 ALTER TABLE `projects` DISABLE KEYS */;
-INSERT INTO `projects` VALUES ('kkkkkk','rfrfr','00:00:00','eseses','2020-09-01',0,1,NULL);
+INSERT INTO `projects` VALUES ('bam bam','bobby','01:04:00','roop','2020-09-03',1,1,'Nat-Comp',1);
 /*!40000 ALTER TABLE `projects` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -91,7 +92,7 @@ CREATE TABLE `reports` (
   `To` time NOT NULL,
   `Description` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -100,6 +101,7 @@ CREATE TABLE `reports` (
 
 LOCK TABLES `reports` WRITE;
 /*!40000 ALTER TABLE `reports` DISABLE KEYS */;
+INSERT INTO `reports` VALUES (1,'loki',1,'bam bam',1,'01:04:00','2020-09-02','17:46:00','18:50:00','check');
 /*!40000 ALTER TABLE `reports` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -142,8 +144,9 @@ CREATE TABLE `users` (
   `phone` varchar(45) DEFAULT NULL,
   `status` time NOT NULL DEFAULT '00:00:00',
   `company` varchar(45) NOT NULL,
+  `adminID` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -152,7 +155,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'liklik','$2b$10$le9tNYqaag0RuCIpCzOjUutRC/ofBZ0vp1Wzn/oZ3NohrRr1Wp.8u','likidvfd@gmai.com','0507544709','00:00:00','not have'),(2,'gaga','$2b$10$5ld3gloatteGxRDzQIx7cODVCQ/0Yv8ws/45VD2dvjduarTp5SQ3u','gaga@gmail.com','0505hdfhd','00:00:00','not have');
+INSERT INTO `users` VALUES (1,'loki','$2b$10$5C4cCV0LpYbN3crJWSqh1.TZfuaaaIruDg7xsbB6vSaPC3MZbhMUy','loki@gmail.com','0507544709','01:04:00','Nat-Comp',1),(3,'lofi','$2b$10$DXh7F.I6J8Olu2O0SllWaOg2n9k13nYBz2GP3Xa/RzfR9CvmJWMiK','lofi@gmail.com',NULL,'00:00:00','Nat-Comp',1),(4,'andrew','$2b$10$fOEV2NfEvZDxsEBRJSMzjO7S.4o2/cCCAHqQ3u7g0Esd.bQzLhEla','drew@gmail.com',NULL,'00:00:00','Nat-Comp',1),(5,'xavier','$2b$10$BgOhlTtcKp8z8LtPvYpZdey5HSiWJ0RxyQjRezt4Iqf2wT5N4/bfK','xavier@gmail.com',NULL,'00:00:00','Nat-Comp',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -165,4 +168,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-09-01 16:46:04
+-- Dump completed on 2020-09-03 16:26:23
