@@ -86,9 +86,11 @@ router.get('/reportsByProject', async (req, res, next)=>{
 });
  
 router.get('/projects', async (req, res, next)=>{
+    const company = req.header('company-name')
     try{
         let results = await db.projects();
-        res.json(results)
+        let filtered = results.filter(project=> project.company===company)
+        res.json(filtered)
     }
     catch(e){
         console.log(e);
@@ -97,10 +99,23 @@ router.get('/projects', async (req, res, next)=>{
 });
 
 router.get('/users', async (req, res, next)=>{
+    const company = req.header('company-name')
+    try{
+        let results = await db.users();
+        let filtered = results.filter(user=> user.company===company)
+        res.json(filtered)
+
+    }
+    catch(e){
+        console.log(e);
+        res.status(500).json({message: "Internal Server Error", status: 500})
+    }
+});
+
+router.get('/allusers', async (req, res, next)=>{
     try{
         let results = await db.users();
         res.json(results)
-
     }
     catch(e){
         console.log(e);
@@ -110,6 +125,7 @@ router.get('/users', async (req, res, next)=>{
 
 router.get('/getIndex',verify, (req, res, next)=>{
     try{
+        
         res.json(req.user.id)
     }
     catch(e){
@@ -122,6 +138,30 @@ router.get('/getToken', verify, (req, res)=> {
     try{
         let userMail = req.user.mail
         res.send({userMail})  
+    }
+    catch(e){
+        console.log(e);
+        res.status(404).json({message: "Page Not Found", status: 404})
+    }
+})
+
+router.get('/getCompanyUser', verify, async (req, res)=> {
+    try{
+        const sql = `SELECT company FROM users WHERE id = ${req.user.id}`;
+        let results = await db.company(sql);
+        res.json(results[0].company)
+    }
+    catch(e){
+        console.log(e);
+        res.status(404).json({message: "Page Not Found", status: 404})
+    }
+})
+
+router.get('/getCompanyAdmin', verify, async (req, res)=> {
+    try{
+        const sql = `SELECT company FROM admins WHERE adminID = ${req.user.id}`;
+        let results = await db.company(sql);
+        res.json(results[0].company)
     }
     catch(e){
         console.log(e);
@@ -192,10 +232,10 @@ router.post('/reports',  (req, res)=> {
     }
 })
 
-router.post('/projects',  (req, res)=> {
+router.post('/projects', (req, res)=> {
     try{
         const rep = req.body;
-        const sql = "INSERT INTO projects (projectName,projectClient, projectStatus, projectManager,projectDate,projectCost) VALUES (?, ?, ?, ?, ?, ?)"  
+        const sql = "INSERT INTO projects (projectName, projectClient, projectStatus, projectManager, projectDate, projectCost, company, adminID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"  
         db.postProject(sql, rep);
         res.status(200).json({message: "Success", status: 200})
     }
@@ -205,11 +245,11 @@ router.post('/projects',  (req, res)=> {
     }
 })
 
-router.post('/users', async (req, res)=> {  
+router.post('/users', (req, res)=> {  
     try{
-        const sql = `INSERT INTO users (name,password,email,phone, company) VALUES (?, ?, ?, ?, ?)`;
-        await bcrypt.hash(req.body.password,10, function(err,hash){
-             db.postUser(sql, {name: req.body.name, password:hash, email: req.body.email, phone: req.body.phone, company: req.body.company}); 
+        const sql = `INSERT INTO users (name,password,email,phone, company, adminID) VALUES (?, ?, ?, ?, ?, ?)`;
+        bcrypt.hash(req.body.password,10, function(err,hash){
+            db.postUser(sql, {name: req.body.name, password:hash, email: req.body.email, phone: req.body.phone, company: req.body.company, adminID: req.body.adminID}); 
         })
         res.status(200).json({message: "Success", status: 200})
     }
@@ -219,11 +259,11 @@ router.post('/users', async (req, res)=> {
     }
 })
 
-router.post('/admins', async (req, res)=> {  
+router.post('/admins', (req, res)=> {  
     try{
         const sql = `INSERT INTO admins (adminName,adminPassword,adminEmail,company) VALUES (?, ?, ?, ?)`;
-        await bcrypt.hash(req.body.password,10, function(err,hash){
-             db.postAdmin(sql, {name: req.body.name, password:hash, email: req.body.email, company: req.body.company}); 
+        bcrypt.hash(req.body.password,10, function(err,hash){
+            db.postAdmin(sql, {name: req.body.name, password:hash, email: req.body.email, company: req.body.company}); 
         })
         res.status(200).json({message: "Success", status: 200})
     }
@@ -374,6 +414,45 @@ router.put('/status', (req, res) =>{
         const sqlProject = `UPDATE projects SET projectStatus = ADDTIME("${req.body.projectStatus}" ,"${req.body.status}") WHERE projectID = ${req.body.projectId};`
         db.updateProjectInfo(sqlProject);
         db.updateUserInfo(sqlUser);
+        res.status(200).json({message: "Success", status: 200})
+    }
+    catch(e){
+        res.status(404).json({message: "Page Not Found", status: 404})
+    }
+})
+
+router.put('/admin/name', (req, res) =>{
+    try{
+        const sql = `UPDATE admins SET adminName = "${req.body.name}" WHERE adminID = ${req.body.id}`;
+        db.updateAdminInfo(sql);
+        res.status(200).json({message: "Success", status: 200})
+    }
+    catch(e){
+        res.status(404).json({message: "Page Not Found", status: 404})
+    }
+})
+
+router.put('/admin/password', (req, res) =>{
+    try{
+        bcrypt.hash(req.body.password,10, function(err,hash){
+            const sql = `UPDATE admins SET adminPassword = "${hash}" WHERE adminID = ${req.body.id}`;
+            db.updateAdminInfo(sql);
+        })
+        res.status(200).json({message: "Success", status: 200})
+    }
+    catch(e){
+        res.status(404).json({message: "Page Not Found", status: 404})
+    }
+})
+
+router.put('/admin/company', (req, res) =>{
+    try{
+        const sql = `UPDATE admins SET company = "${req.body.company}" WHERE adminID = ${req.body.adminID}`;
+        const sqlUser = `UPDATE users SET company = "${req.body.company}" WHERE adminID = ${req.body.adminID}`;
+        const sqlProject = `UPDATE projects SET company = "${req.body.company}" WHERE adminID = ${req.body.adminID}`;
+        db.updateAdminInfo(sql);
+        db.updateUserInfo(sqlUser);
+        db.updateProjectInfo(sqlProject);
         res.status(200).json({message: "Success", status: 200})
     }
     catch(e){

@@ -88,9 +88,20 @@ timedb.postReport = (sql, rep)=> {
     });
 };
 
+timedb.company = (sql, rep)=> {
+    return new Promise((resolve, reject)=>{
+        db.query(sql, (err,results)=>{
+            if(err){
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+};
+
 timedb.postUser = (sql, rep)=> {
     return new Promise((resolve, reject)=>{
-        db.query(sql, [rep.name, rep.password, rep.email, rep.phone, rep.company], (err,results)=>{
+        db.query(sql, [rep.name, rep.password, rep.email, rep.phone, rep.company, rep.adminID], (err,results)=>{
             if(err){
                 return reject(err);
             }
@@ -112,7 +123,7 @@ timedb.postAdmin = (sql, rep)=> {
 
 timedb.postProject =(sql, rep) =>{
     return new Promise((resolve, reject)=>{
-        db.query(sql, [rep.name, rep.client, rep.status, rep.manager, rep.date, rep.cost], (err,results)=>{
+        db.query(sql, [rep.name, rep.client, rep.status, rep.manager, rep.date, rep.cost, rep.company, rep.adminID], (err,results)=>{
             if(err){
                 return reject(err);
             }
@@ -177,6 +188,17 @@ timedb.updateProjectInfo =(sql) =>{
 }
 
 timedb.updateReportInfo =(sql) =>{
+    return new Promise((resolve, reject)=>{
+        db.query(sql, (err,results)=>{
+            if(err){
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+}
+
+timedb.updateAdminInfo =(sql) =>{
     return new Promise((resolve, reject)=>{
         db.query(sql, (err,results)=>{
             if(err){
