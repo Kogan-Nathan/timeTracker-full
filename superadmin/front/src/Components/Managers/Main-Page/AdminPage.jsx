@@ -41,7 +41,7 @@ export default function AdminPage(props) {
             .then(response=> response.json())
             .then(data=> setUsers(data))
             .catch(error=> console.error('Error: ', error))
-        }, 500); 
+        }, 200); 
 
     },[dbRender]);
 

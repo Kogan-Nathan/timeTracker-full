@@ -111,7 +111,11 @@ function App() {
           <Route exact path="/" component={()=>{return <Homepage/>}}/>
           <Route exact path="/login" component={()=>{return <Login/>}}/>
 
-          <SuperAdminRoute exact path="/super-admin" component={()=>{return <SuperAdmin/>}}/>
+          <SuperAdminRoute exact path="/super-admin/managers" component={()=>{return <SuperAdmin displayPage={"Managers"}/>}}/>
+          <SuperAdminRoute exact path="/super-admin/employees" component={()=>{return <SuperAdmin displayPage={"Employees"}/>}}/>
+          <SuperAdminRoute exact path="/super-admin/projects" component={()=>{return <SuperAdmin displayPage={"Projects"}/>}}/>
+          <SuperAdminRoute exact path="/super-admin/reports-by-employees" component={()=>{return <SuperAdmin displayPage={"Reports-by-employee"}/>}}/>
+          <SuperAdminRoute exact path="/super-admin/reports-by-projects" component={()=>{return <SuperAdmin displayPage={"Reports-by-project"}/>}}/>
 
           <AdminPrivateRoute exact path={`/${company}/admin=${UserId}`} component={()=>{return <Admin company={company} adminID={UserId} displayPage={"Users"}/>}}/>
           <AdminPrivateRoute exact path={`/${company}/admin=${UserId}/users`} component={()=>{return <Admin company={company} adminID={UserId}  isReport={false} displayPage={"Users"}/>}}/>

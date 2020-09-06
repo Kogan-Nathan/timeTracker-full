@@ -656,6 +656,9 @@ th{
   grid-area: butt;
 }
 
+.super_select{
+  grid-area: super_select;
+}
 .grid-for-description{
   display: grid;
   grid-gap: 0.2rem;
@@ -680,6 +683,16 @@ th{
 
 .adminNavLinks{
   grid-area: a;
+}
+
+.grid_super_search{
+  display: grid;
+  margin-bottom: 40px;
+  grid-gap: 1rem;
+  grid-template-columns: 
+  1fr 150px 520px 200px 1fr;
+  grid-template-areas: 
+  "a super_select search add ";  
 }
 
 .grid-search{

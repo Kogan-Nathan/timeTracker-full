@@ -80,7 +80,7 @@ export default function Login(){
             if(superAdmin[0].password===password){
                 localStorage.setItem('UserName', 'admin')
                 dispatch(setToken(email, 'adminToken'))
-                history.push('/super-admin')
+                history.push('/super-admin/managers')
             }
             else{
                 setWrongPasswordSpan(true)

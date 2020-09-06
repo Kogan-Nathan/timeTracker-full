@@ -9,11 +9,11 @@ export default function Popup(props){
     //----------------------------------------------------------    
     const displayArrayToBeDeleted=()=>{
         if(props.projectsArray.length>0){
-            let projectsToBeDeleted = props.projectsArray.map( project => {return<p  key={randomStringGenerator()}>{project}</p>})
+            let projectsToBeDeleted = props.projectsArray.map( project => {return<p  key={randomStringGenerator}>{project}</p>})
             return (projectsToBeDeleted)
         }
         else{
-            let usersToBeDeleted = props.usersArray.map( user => {return<p key={randomStringGenerator()}>{user}</p>})
+            let usersToBeDeleted = props.usersArray.map( user => {return<p key={randomStringGenerator}>{user}</p>})
             return (usersToBeDeleted)
         }
     }
